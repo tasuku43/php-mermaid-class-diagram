@@ -17,7 +17,7 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Realization;
 
 class ClassDiagramBuilderTest extends TestCase
 {
-    public function testBuild(): void
+    public function tesBuild_forDir(): void
     {
         $expectedDiagram = new ClassDiagram();
 
@@ -42,5 +42,24 @@ class ClassDiagramBuilderTest extends TestCase
         ));
 
         self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/'));
+    }
+
+    public function testBuild_forFilePath(): void
+    {
+        $expectedDiagram = new ClassDiagram();
+
+        $someClass           = new Class_('SomeClass');
+        $defaultExtendsClass = new Class_('SomeAbstractClass');
+        $someClass->extends($defaultExtendsClass);
+
+        $expectedDiagram->addNode($someClass)
+            ->addRelationships(new Inheritance($someClass, $defaultExtendsClass));
+
+        $builder = new ClassDiagramBuilder(new NodeBuilder(
+            (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
+            new NodeFinder()
+        ));
+
+        self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/SomeClass.php'));
     }
 }

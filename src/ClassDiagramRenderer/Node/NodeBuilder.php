@@ -31,8 +31,8 @@ class NodeBuilder
      */
     public function build(string $path): array
     {
-        $finder = str_ends_with('.php', $path)
-            ? (new Finder())->in(pathinfo($path, PATHINFO_DIRNAME))->name('*.php')->files()
+        $finder = str_ends_with($path, '.php')
+            ? (new Finder())->in(pathinfo($path, PATHINFO_DIRNAME))->name(pathinfo($path, PATHINFO_BASENAME))->files()
             : (new Finder())->in($path)->name('*.php')->files();
 
         $nodes      = [];
