@@ -12,6 +12,7 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Exception\CannnotParseToClassLikeException;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node as ClassDiagramNode;
 
 class NodeParser
@@ -40,7 +41,11 @@ class NodeParser
         $implements = [];
 
         foreach ($finder as $file) {
-            $classLike = $this->parseClassLike($file->getContents());
+            try {
+                $classLike = $this->parseClassLike($file->getContents());
+            } catch (CannnotParseToClassLikeException) {
+                continue;
+            }
 
             $classDiagramNode = match (true) {
                 $classLike instanceof Node\Stmt\Class_ => $classLike->isAbstract()
@@ -99,7 +104,9 @@ class NodeParser
             return $node instanceof Node\Stmt\Class_
                 || $node instanceof Node\Stmt\Interface_;
         });
-        assert($classLike instanceof ClassLike);
+        if (!$classLike instanceof ClassLike) {
+            throw new CannnotParseToClassLikeException();
+        }
 
         return $classLike;
     }
