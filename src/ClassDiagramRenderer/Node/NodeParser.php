@@ -5,6 +5,7 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
 
 use Exception;
 use PhpParser\Node;
+use PhpParser\Node\Name;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -90,7 +91,7 @@ class NodeParser
             });
             if ($construct !== null) {
                 assert($construct instanceof ClassMethod);
-                foreach ($construct->getParams() as $param) {
+                foreach (array_filter($construct->getParams(), fn(Node\Param $param) => $param->type instanceof Name) as $param) {
                     assert($param instanceof Node\Param);
 
                     // If `visibirity` is not specified, flags is 0

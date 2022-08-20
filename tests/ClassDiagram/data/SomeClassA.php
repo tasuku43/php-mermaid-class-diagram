@@ -7,7 +7,7 @@ class SomeClassA extends SomeAbstractClass
 {
     private SomeClassB $someClassB;
 
-    public function __construct(private SomeClassC $someClassC, SomeClassD $someClassD)
+    public function __construct(private SomeClassC $someClassC, SomeClassD $someClassD, private int $int)
     {
     }
 }
