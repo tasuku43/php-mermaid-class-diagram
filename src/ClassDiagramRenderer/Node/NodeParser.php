@@ -5,7 +5,9 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
 
 use Exception;
 use PhpParser\Node;
+use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\Property;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
@@ -39,6 +41,7 @@ class NodeParser
         $nodes      = [];
         $extends    = [];
         $implements = [];
+        $properties = [];
 
         foreach ($finder as $file) {
             try {
@@ -58,17 +61,24 @@ class NodeParser
             $nodes[$classDiagramNode->nodeName()] = $classDiagramNode;
 
             if ($classLike->extends !== null) {
-                $extends[(string)$classLike->name] = is_array($classLike->extends)
+                $extends[$classDiagramNode->nodeName()] = is_array($classLike->extends)
                     ? array_map(function (Node\Name $name) {
                         return (string) $name->getLast();
                     }, $classLike->extends)
                     : [(string) $classLike->extends->getLast()];
             }
+
             if (property_exists($classLike, 'implements') && $classLike->implements !== []) {
-                $implements[(string)$classLike->name] = array_map(function (Node\Name $name) {
+                $implements[$classDiagramNode->nodeName()] = array_map(function (Node\Name $name) {
                     return (string) $name->getLast();
                 }, $classLike->implements);
             }
+
+            $properties[$classDiagramNode->nodeName()] = array_map(function (Property $property) {
+                return $property->type->getLast();
+            }, array_filter($classLike->getProperties(),
+                fn(Property $property) => $property->type instanceof FullyQualified)
+            );
         }
 
         foreach ($extends as $key => $extendsNames) {
@@ -81,6 +91,11 @@ class NodeParser
         foreach ($implements as $key => $implementsNames) {
             foreach ($implementsNames as $implementsName) {
                 $nodes[$key]->implements($nodes[$implementsName] ??  new Interface_($implementsName));
+            }
+        }
+        foreach ($properties as $key => $propertyNames) {
+            foreach ($propertyNames as $propertyName) {
+                $nodes[$key]->composition($nodes[$propertyName] ??  new Class_($propertyName));
             }
         }
 
