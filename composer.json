@@ -19,6 +19,9 @@
             "email": "task.teckac@gmail.com"
         }
     ],
+    "bin": [
+        "mermaid-class-diagram"
+    ],
     "require-dev": {
         "phpunit/phpunit": "^9.5"
     },

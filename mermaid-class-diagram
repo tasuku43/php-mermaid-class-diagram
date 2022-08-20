@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Console\Application;
+use Tasuku43\MermaidClassDiagram\Console\Command\GenerateCommand;
+
+foreach (array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
+    if (file_exists($file)) {
+        require $file;
+        break;
+    }
+}
+
+$app = new Application('Generate class diagram from PHP code.', '0.0.1');
+
+$app->add(new GenerateCommand());
+
+$app->run();
