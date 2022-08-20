@@ -9,4 +9,9 @@ class Inheritance extends Relationship
     {
         return '--|>';
     }
+
+    protected function description(): string
+    {
+        return 'inheritance';
+    }
 }

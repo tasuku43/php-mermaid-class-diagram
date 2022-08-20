@@ -9,4 +9,9 @@ class Composition extends Relationship
     {
         return '*--';
     }
+
+    protected function description(): string
+    {
+        return 'composition';
+    }
 }

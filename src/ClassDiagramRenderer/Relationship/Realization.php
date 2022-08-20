@@ -9,4 +9,9 @@ class Realization extends Relationship
     {
         return '..|>';
     }
+
+    protected function description(): string
+    {
+        return 'realization';
+    }
 }

@@ -29,9 +29,9 @@ class ClassDiagramTest extends TestCase
                     <<interface>>
                 }
 
-                SomeAbstructClass ..|> SomeInterface
-                SomeClass01 --|> SomeAbstructClass
-                SomeClass01 *-- SomeClass02
+                SomeAbstructClass ..|> SomeInterface: realization
+                SomeClass01 --|> SomeAbstructClass: inheritance
+                SomeClass01 *-- SomeClass02: composition
 
             EOM;
 
