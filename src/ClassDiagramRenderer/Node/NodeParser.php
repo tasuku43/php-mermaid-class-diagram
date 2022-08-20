@@ -7,6 +7,7 @@ use Exception;
 use PhpParser\Node;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
@@ -83,6 +84,24 @@ class NodeParser
             }, array_filter($classLike->getProperties(),
                 fn(Property $property) => $property->type instanceof FullyQualified)
             );
+
+            $construct = $this->nodeFinder->findFirst($classLike, function (Node $node) {
+                return $node instanceof ClassMethod && (string) $node->name === '__construct';
+            });
+            if ($construct !== null) {
+                assert($construct instanceof ClassMethod);
+                foreach ($construct->getParams() as $param) {
+                    assert($param instanceof Node\Param);
+
+                    // If `visibirity` is not specified, flags is 0
+                    if ($param->flags !== 0) {
+                        $properties[$classDiagramNode->nodeName()] = array_merge(
+                            $properties[$classDiagramNode->nodeName()],
+                            [$param->type->getLast()]
+                        );
+                    }
+                }
+            }
         }
 
         foreach ($nodes as $node) {
