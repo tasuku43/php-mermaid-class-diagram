@@ -150,8 +150,8 @@ class NodeParser
     private function createDefaultExtendsNode(ClassDiagramNode $extended, string $extendsNodeName): ClassDiagramNode
     {
         return match (true) {
-            $extended instanceof Class_ => new Class_($extendsNodeName),
-            $extended instanceof Interface_ => new Interface_($extendsNodeName)
+            $extended instanceof Interface_ => new Interface_($extendsNodeName),
+            default => new Class_($extendsNodeName),
         };
     }
 }
