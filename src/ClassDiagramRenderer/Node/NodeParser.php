@@ -14,7 +14,7 @@ use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node as ClassDiagramNode;
 
-class NodeBuilder
+class NodeParser
 {
     public function __construct(
         private Parser     $parser,
@@ -29,7 +29,7 @@ class NodeBuilder
      *
      * @throws Exception
      */
-    public function build(string $path): array
+    public function parse(string $path): array
     {
         $finder = str_ends_with($path, '.php')
             ? (new Finder())->in(pathinfo($path, PATHINFO_DIRNAME))->name(pathinfo($path, PATHINFO_BASENAME))->files()

@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Exception;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeBuilder;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
 
 class ClassDiagramBuilder
 {
-    public function __construct(private NodeBuilder $nodeBulder)
+    public function __construct(private NodeParser $nodeParser)
     {
     }
 
@@ -21,7 +21,7 @@ class ClassDiagramBuilder
     {
         $classDigagram = new ClassDiagram();
 
-        foreach ($this->nodeBulder->build($path) as $node) {
+        foreach ($this->nodeParser->parse($path) as $node) {
             $classDigagram->addNode($node)->addRelationships(...$node->relationships());
         }
 

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeBuilder;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
 
 class GenerateCommand extends Command
 {
@@ -32,7 +32,7 @@ class GenerateCommand extends Command
 
         $path = $input->getOption('path');
 
-        $builder = new ClassDiagramBuilder(new NodeBuilder(
+        $builder = new ClassDiagramBuilder(new NodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
             new NodeFinder()
         ));
