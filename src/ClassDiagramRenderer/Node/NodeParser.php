@@ -38,9 +38,13 @@ class NodeParser
             ? (new Finder())->in(pathinfo($path, PATHINFO_DIRNAME))->name(pathinfo($path, PATHINFO_BASENAME))->files()
             : (new Finder())->in($path)->name('*.php')->files();
 
-        $nodes      = [];
-        $extends    = [];
+        /** @var Node[] $nodes */
+        $nodes = [];
+        /** @var array<string, array> $extends */
+        $extends = [];
+        /** @var  array<string, array> $implements */
         $implements = [];
+        /** @var  array<string, array> $properties */
         $properties = [];
 
         foreach ($finder as $file) {
@@ -81,21 +85,18 @@ class NodeParser
             );
         }
 
-        foreach ($extends as $key => $extendsNames) {
-            foreach ($extendsNames as $extendsName) {
-                $nodes[$key]->extends(
-                    $nodes[$extendsName] ?? $this->createDefaultExtendsNode($nodes[$key], $extendsName)
+        foreach ($nodes as $node) {
+            $nodeName = $node->nodeName();
+            foreach ($extends[$nodeName] ?? [] as $extendsName) {
+                $node->extends(
+                    $nodes[$extendsName] ?? $this->createDefaultExtendsNode($node, $extendsName)
                 );
             }
-        }
-        foreach ($implements as $key => $implementsNames) {
-            foreach ($implementsNames as $implementsName) {
-                $nodes[$key]->implements($nodes[$implementsName] ??  new Interface_($implementsName));
+            foreach ($implements[$nodeName] ?? [] as $implementsName) {
+                $node->implements($nodes[$implementsName] ?? new Interface_($implementsName));
             }
-        }
-        foreach ($properties as $key => $propertyNames) {
-            foreach ($propertyNames as $propertyName) {
-                $nodes[$key]->composition($nodes[$propertyName] ??  new Class_($propertyName));
+            foreach ($properties[$nodeName] ?? [] as $propertyName) {
+                $node->composition($nodes[$propertyName] ?? new Class_($propertyName));
             }
         }
 
