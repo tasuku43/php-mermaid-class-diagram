@@ -3,6 +3,16 @@
     "description": "Generate class diagrams code written in mermaid-js.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "php",
+        "diagram",
+        "diagrams",
+        "uml",
+        "mermaid",
+        "mermaidjs",
+        "diagram-generator",
+        "class-diagram"
+    ],
     "autoload": {
         "psr-4": {
             "Tasuku43\\MermaidClassDiagram\\": "src/"
