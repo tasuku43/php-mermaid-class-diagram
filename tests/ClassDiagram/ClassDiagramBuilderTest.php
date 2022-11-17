@@ -11,7 +11,7 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\AbstractClass_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Class_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Interface_;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\DiagramNodeParser;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Composition;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Inheritance;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Realization;
@@ -45,7 +45,7 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Composition($someClassA, $someClassB))
             ->addRelationships(new Composition($someClassA, $someClassC));
 
-        $builder = new ClassDiagramBuilder(new NodeParser(
+        $builder = new ClassDiagramBuilder(new DiagramNodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
             new NodeFinder()
         ));
@@ -71,7 +71,7 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Composition($someClass, $defaultCompositionClass1))
             ->addRelationships(new Composition($someClass, $defaultCompositionClass2));
 
-        $builder = new ClassDiagramBuilder(new NodeParser(
+        $builder = new ClassDiagramBuilder(new DiagramNodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
             new NodeFinder()
         ));

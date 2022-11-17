@@ -3,17 +3,17 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
 
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidNode;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidDiagramNode;
 
-trait NodeRenderSupoert
+trait DiagramNodeRenderSupoert
 {
-    /** @var MermaidNode[] */
+    /** @var MermaidDiagramNode[] */
     protected array $extends = [];
 
-    /** @var MermaidNode[] */
+    /** @var MermaidDiagramNode[] */
     protected array $implements = [];
 
-    /** @var MermaidNode[] */
+    /** @var MermaidDiagramNode[] */
     protected array $properties = [];
 
     public function __construct(protected string $name)
@@ -22,17 +22,17 @@ trait NodeRenderSupoert
 
     abstract public function render(): string;
 
-    public function extends(MermaidNode $node): void
+    public function extends(MermaidDiagramNode $node): void
     {
         $this->extends[] = $node;
     }
 
-    public function implements(MermaidNode $node): void
+    public function implements(MermaidDiagramNode $node): void
     {
         $this->implements[] = $node;
     }
 
-    public function composition(MermaidNode $node): void
+    public function composition(MermaidDiagramNode $node): void
     {
         $this->properties[] = $node;
     }

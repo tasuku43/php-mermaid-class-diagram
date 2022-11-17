@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Exception;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\DiagramNodeParser;
 
 class ClassDiagramBuilder
 {
-    public function __construct(private NodeParser $nodeParser)
+    public function __construct(private DiagramNodeParser $nodeParser)
     {
     }
 

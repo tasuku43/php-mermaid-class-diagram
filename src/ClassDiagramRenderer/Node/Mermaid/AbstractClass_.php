@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid;
 
-class AbstractClass_ extends MermaidNode
+class AbstractClass_ extends MermaidDiagramNode
 {
     public function render(): string
     {

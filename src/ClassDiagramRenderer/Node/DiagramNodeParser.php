@@ -20,9 +20,9 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Exception\CannnotPars
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\AbstractClass_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Class_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Interface_;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidNode as ClassDiagramNode;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidDiagramNode as ClassDiagramNode;
 
-class NodeParser
+class DiagramNodeParser
 {
     public function __construct(
         private Parser     $parser,
