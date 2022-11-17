@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
+namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid;
 
-class Interface_ extends Node
+class Interface_ extends MermaidNode
 {
     public function render(): string
     {

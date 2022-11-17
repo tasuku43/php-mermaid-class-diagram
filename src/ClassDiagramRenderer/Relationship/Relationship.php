@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship;
 
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidNode;
 
 abstract class Relationship
 {
     private string $description;
 
-    public function __construct(private Node $from, private Node $to, string $description = null)
+    public function __construct(private MermaidNode $from, private MermaidNode $to, string $description = null)
     {
         $this->description = $description ?? $this->description();
     }
