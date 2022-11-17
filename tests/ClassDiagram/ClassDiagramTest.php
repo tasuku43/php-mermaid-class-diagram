@@ -5,9 +5,9 @@ namespace Tasuku43\Tests\MermaidClassDiagram\ClassDiagram;
 
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagram;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\AbstractClass_;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Class_;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Interface_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\AbstractClass_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Class_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Interface_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Composition;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Inheritance;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Realization;

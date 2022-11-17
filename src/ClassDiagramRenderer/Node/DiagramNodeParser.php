@@ -17,13 +17,16 @@ use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Exception\CannnotParseToClassLikeException;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node as ClassDiagramNode;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Class_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Interface_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidDiagramNode as ClassDiagramNode;
 
-class NodeParser
+class DiagramNodeParser
 {
     public function __construct(
         private Parser     $parser,
         private NodeFinder $nodeFinder,
+        private DiagramNodeMaker $diagramNodeMaker
     )
     {
     }
@@ -40,7 +43,7 @@ class NodeParser
             ? (new Finder())->in(pathinfo($path, PATHINFO_DIRNAME))->name(pathinfo($path, PATHINFO_BASENAME))->files()
             : (new Finder())->in($path)->name('*.php')->files();
 
-        /** @var Node[] $nodes */
+        /** @var ClassDiagramNode $nodes */
         $nodes = [];
         /** @var array<string, array> $extends */
         $extends = [];
@@ -58,9 +61,9 @@ class NodeParser
 
             $classDiagramNode = match (true) {
                 $classLike instanceof Node\Stmt\Class_ => $classLike->isAbstract()
-                    ? new AbstractClass_((string)$classLike->name->name)
-                    : new Class_((string)$classLike->name->name),
-                $classLike instanceof Node\Stmt\Interface_ => new Interface_((string)$classLike->name->name),
+                    ? $this->diagramNodeMaker->makeAbstractClass((string)$classLike->name->name)
+                    : $this->diagramNodeMaker->makeClass((string)$classLike->name->name),
+                $classLike instanceof Node\Stmt\Interface_ => $this->diagramNodeMaker->makeInterface((string)$classLike->name->name),
                 default => throw new Exception('Unexpected match value')
             };
 

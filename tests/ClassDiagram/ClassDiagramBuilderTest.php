@@ -8,23 +8,25 @@ use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagram;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\AbstractClass_;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Class_;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Interface_;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\AbstractClass_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Class_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Interface_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\DiagramNodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidDiagramNodeMaker;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Composition;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Inheritance;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Realization;
 
 class ClassDiagramBuilderTest extends TestCase
 {
-    public function tesBuild_forDir(): void
+    public function testBuild_forDir(): void
     {
         $expectedDiagram = new ClassDiagram();
 
         $someClassA        = new Class_('SomeClassA');
         $someClassB        = new Class_('SomeClassB');
         $someClassC        = new Class_('SomeClassC');
+        $someClassD        = new Class_('SomeClassD');
         $someAbstructClass = new AbstractClass_('SomeAbstractClass');
         $someInterface     = new Interface_('SomeInterface');
 
@@ -34,10 +36,11 @@ class ClassDiagramBuilderTest extends TestCase
         $someAbstructClass->implements($someInterface);
 
         $expectedDiagram
+            ->addNode($someClassC)
+            ->addNode($someClassB)
             ->addNode($someAbstructClass)
             ->addNode($someClassA)
-            ->addNode($someClassB)
-            ->addNode($someClassC)
+            ->addNode($someClassD)
             ->addNode($someInterface);
 
         $expectedDiagram->addRelationships(new Realization($someAbstructClass, $someInterface))
@@ -45,12 +48,13 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Composition($someClassA, $someClassB))
             ->addRelationships(new Composition($someClassA, $someClassC));
 
-        $builder = new ClassDiagramBuilder(new NodeParser(
+        $acualDiagram = (new ClassDiagramBuilder(new DiagramNodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
-            new NodeFinder()
-        ));
+            new NodeFinder(),
+            new MermaidDiagramNodeMaker()
+        )))->build(__DIR__ . '/data/');
 
-        self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/'));
+        $this->assertEqualsDiagrams($expectedDiagram, $acualDiagram);
     }
 
     public function testBuild_forFilePath(): void
@@ -71,11 +75,26 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Composition($someClass, $defaultCompositionClass1))
             ->addRelationships(new Composition($someClass, $defaultCompositionClass2));
 
-        $builder = new ClassDiagramBuilder(new NodeParser(
+        $acualDiagram = (new ClassDiagramBuilder(new DiagramNodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
-            new NodeFinder()
-        ));
+            new NodeFinder(),
+            new MermaidDiagramNodeMaker()
+        )))->build(__DIR__ . '/data/SomeClassA.php');
 
-        self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/SomeClassA.php'));
+        $this->assertEqualsDiagrams($expectedDiagram, $acualDiagram);
+    }
+
+    public function assertEqualsDiagrams(ClassDiagram $expectedDiagram, ClassDiagram $acualDiagram): void
+    {
+        self::assertSame(count($expectedDiagram->getNodes()), count($acualDiagram->getNodes()));
+        self::assertSame(count($expectedDiagram->getRelationships()), count($acualDiagram->getRelationships()));
+
+        foreach ($expectedDiagram->getNodes() as $node) {
+            self::assertContainsEquals($node, $acualDiagram->getNodes());
+        }
+
+        foreach ($expectedDiagram->getRelationships() as $node) {
+            self::assertContainsEquals($node, $acualDiagram->getRelationships());
+        }
     }
 }
