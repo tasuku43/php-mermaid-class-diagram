@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidDiagramNode;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\DiagramNode;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Relationship;
 
 class ClassDiagram
 {
     /**
-     * @var MermaidDiagramNode[]
+     * @var DiagramNode[]
      */
     private array $nodes;
 
@@ -18,7 +18,7 @@ class ClassDiagram
      */
     private array $relationships = [];
 
-    public function addNode(MermaidDiagramNode $node): self
+    public function addNode(DiagramNode $node): self
     {
         $this->nodes[] = $node;
 

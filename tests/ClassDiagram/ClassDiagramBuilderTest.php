@@ -12,19 +12,21 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\AbstractClass
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Class_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Interface_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\DiagramNodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidDiagramNodeMaker;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Composition;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Inheritance;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Realization;
 
 class ClassDiagramBuilderTest extends TestCase
 {
-    public function tesBuild_forDir(): void
+    public function testBuild_forDir(): void
     {
         $expectedDiagram = new ClassDiagram();
 
         $someClassA        = new Class_('SomeClassA');
         $someClassB        = new Class_('SomeClassB');
         $someClassC        = new Class_('SomeClassC');
+        $someClassD        = new Class_('SomeClassD');
         $someAbstructClass = new AbstractClass_('SomeAbstractClass');
         $someInterface     = new Interface_('SomeInterface');
 
@@ -34,10 +36,11 @@ class ClassDiagramBuilderTest extends TestCase
         $someAbstructClass->implements($someInterface);
 
         $expectedDiagram
+            ->addNode($someClassC)
+            ->addNode($someClassB)
             ->addNode($someAbstructClass)
             ->addNode($someClassA)
-            ->addNode($someClassB)
-            ->addNode($someClassC)
+            ->addNode($someClassD)
             ->addNode($someInterface);
 
         $expectedDiagram->addRelationships(new Realization($someAbstructClass, $someInterface))
@@ -47,7 +50,8 @@ class ClassDiagramBuilderTest extends TestCase
 
         $builder = new ClassDiagramBuilder(new DiagramNodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
-            new NodeFinder()
+            new NodeFinder(),
+            new MermaidDiagramNodeMaker()
         ));
 
         self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/'));
@@ -73,7 +77,8 @@ class ClassDiagramBuilderTest extends TestCase
 
         $builder = new ClassDiagramBuilder(new DiagramNodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
-            new NodeFinder()
+            new NodeFinder(),
+            new MermaidDiagramNodeMaker()
         ));
 
         self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/SomeClassA.php'));

@@ -17,7 +17,6 @@ use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Exception\CannnotParseToClassLikeException;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\AbstractClass_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Class_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\Interface_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Mermaid\MermaidDiagramNode as ClassDiagramNode;
@@ -27,6 +26,7 @@ class DiagramNodeParser
     public function __construct(
         private Parser     $parser,
         private NodeFinder $nodeFinder,
+        private DiagramNodeMaker $diagramNodeMaker
     )
     {
     }
@@ -61,9 +61,9 @@ class DiagramNodeParser
 
             $classDiagramNode = match (true) {
                 $classLike instanceof Node\Stmt\Class_ => $classLike->isAbstract()
-                    ? new AbstractClass_((string)$classLike->name->name)
-                    : new Class_((string)$classLike->name->name),
-                $classLike instanceof Node\Stmt\Interface_ => new Interface_((string)$classLike->name->name),
+                    ? $this->diagramNodeMaker->makeAbstractClass((string)$classLike->name->name)
+                    : $this->diagramNodeMaker->makeClass((string)$classLike->name->name),
+                $classLike instanceof Node\Stmt\Interface_ => $this->diagramNodeMaker->makeInterface((string)$classLike->name->name),
                 default => throw new Exception('Unexpected match value')
             };
 
