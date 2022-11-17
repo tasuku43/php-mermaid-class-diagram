@@ -48,13 +48,13 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Composition($someClassA, $someClassB))
             ->addRelationships(new Composition($someClassA, $someClassC));
 
-        $builder = new ClassDiagramBuilder(new DiagramNodeParser(
+        $acualDiagram = (new ClassDiagramBuilder(new DiagramNodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
             new NodeFinder(),
             new MermaidDiagramNodeMaker()
-        ));
+        )))->build(__DIR__ . '/data/');
 
-        self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/'));
+        $this->assertEqualsDiagrams($expectedDiagram, $acualDiagram);
     }
 
     public function testBuild_forFilePath(): void
@@ -75,12 +75,26 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Composition($someClass, $defaultCompositionClass1))
             ->addRelationships(new Composition($someClass, $defaultCompositionClass2));
 
-        $builder = new ClassDiagramBuilder(new DiagramNodeParser(
+        $acualDiagram = (new ClassDiagramBuilder(new DiagramNodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
             new NodeFinder(),
             new MermaidDiagramNodeMaker()
-        ));
+        )))->build(__DIR__ . '/data/SomeClassA.php');
 
-        self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/SomeClassA.php'));
+        $this->assertEqualsDiagrams($expectedDiagram, $acualDiagram);
+    }
+
+    public function assertEqualsDiagrams(ClassDiagram $expectedDiagram, ClassDiagram $acualDiagram): void
+    {
+        self::assertSame(count($expectedDiagram->getNodes()), count($acualDiagram->getNodes()));
+        self::assertSame(count($expectedDiagram->getRelationships()), count($acualDiagram->getRelationships()));
+
+        foreach ($expectedDiagram->getNodes() as $node) {
+            self::assertContainsEquals($node, $acualDiagram->getNodes());
+        }
+
+        foreach ($expectedDiagram->getRelationships() as $node) {
+            self::assertContainsEquals($node, $acualDiagram->getRelationships());
+        }
     }
 }

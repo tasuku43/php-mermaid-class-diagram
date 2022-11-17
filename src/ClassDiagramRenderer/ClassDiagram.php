@@ -18,6 +18,16 @@ class ClassDiagram
      */
     private array $relationships = [];
 
+    public function getNodes(): array
+    {
+        return $this->nodes;
+    }
+
+    public function getRelationships(): array
+    {
+        return $this->relationships;
+    }
+
     public function addNode(DiagramNode $node): self
     {
         $this->nodes[] = $node;
