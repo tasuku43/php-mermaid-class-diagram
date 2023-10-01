@@ -27,7 +27,7 @@ class ClassDiagram
 
     public function addRelationships(Relationship ...$relationships): self
     {
-        $this->relationships = array_merge($this->relationships, $relationships);
+        $this->relationships = [...$this->relationships, ...$relationships];
 
         return $this;
     }
