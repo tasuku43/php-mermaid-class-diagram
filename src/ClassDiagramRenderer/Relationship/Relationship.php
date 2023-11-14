@@ -7,19 +7,10 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
 
 abstract class Relationship
 {
-    private string $description;
-
-    public function __construct(private Node $from, private Node $to, string $description = null)
+    protected const FORMAT = "%s %s %s: %s";
+    public function __construct(protected Node $from, protected Node $to)
     {
-        $this->description = $description ?? $this->description();
     }
 
-    public function render(): string
-    {
-        $format = "%s %s %s: %s";
-        return sprintf($format, $this->from->nodeName(), $this->arrow(), $this->to->nodeName(), $this->description);
-    }
-
-    abstract protected function arrow(): string;
-    abstract protected function description(): string;
+    abstract protected function render(): string;
 }

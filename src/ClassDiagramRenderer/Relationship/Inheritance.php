@@ -5,13 +5,8 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship;
 
 class Inheritance extends Relationship
 {
-    protected function arrow(): string
+    public function render(): string
     {
-        return '--|>';
-    }
-
-    protected function description(): string
-    {
-        return 'inheritance';
+        return sprintf(self::FORMAT, $this->to->nodeName(), '<|--', $this->from->nodeName(), 'inheritance');
     }
 }

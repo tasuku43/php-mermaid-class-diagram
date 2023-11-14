@@ -5,13 +5,8 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship;
 
 class Composition extends Relationship
 {
-    protected function arrow(): string
+    public function render(): string
     {
-        return '*--';
-    }
-
-    protected function description(): string
-    {
-        return 'composition';
+        return sprintf(self::FORMAT, $this->from->nodeName(), '*--', $this->to->nodeName(), 'composition');
     }
 }

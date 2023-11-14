@@ -67,8 +67,8 @@ classDiagram
         <<interface>>
     }
 
-    SomeAbstractClass ..|> SomeInterface: realization
-    SomeClassA --|> SomeAbstractClass: inheritance
+    SomeInterface <|.. SomeAbstractClass: realization
+    SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
 ```
@@ -87,8 +87,8 @@ classDiagram
         <<interface>>
     }
 
-    SomeAbstractClass ..|> SomeInterface: realization
-    SomeClassA --|> SomeAbstractClass: inheritance
+    SomeInterface <|.. SomeAbstractClass: realization
+    SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
 ```
@@ -99,7 +99,7 @@ classDiagram
     class SomeClassA {
     }
 
-    SomeClassA --|> SomeAbstractClass: inheritance
+    SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
 ```
@@ -108,7 +108,7 @@ classDiagram
     class SomeClassA {
     }
 
-    SomeClassA --|> SomeAbstractClass: inheritance
+    SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
 ```

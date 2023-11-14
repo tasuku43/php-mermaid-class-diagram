@@ -5,13 +5,8 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship;
 
 class Realization extends Relationship
 {
-    protected function arrow(): string
+    public function render(): string
     {
-        return '..|>';
-    }
-
-    protected function description(): string
-    {
-        return 'realization';
+        return sprintf(self::FORMAT, $this->to->nodeName(), '<|..', $this->from->nodeName(), 'realization');
     }
 }
