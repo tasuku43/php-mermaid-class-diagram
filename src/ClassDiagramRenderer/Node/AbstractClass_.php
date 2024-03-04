@@ -9,7 +9,7 @@ class AbstractClass_ extends Node
     {
         return <<<EOM
             class $this->name {
-                    <<abstruct>>
+                    <<abstract>>
                 }
             EOM;
     }
