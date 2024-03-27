@@ -18,12 +18,12 @@ class ClassDiagramTest extends TestCase
     {
         $expectedClassDiagram = <<<EOM
             classDiagram
+                class SomeAbstructClass {
+                    <<abstract>>
+                }
                 class SomeClass01 {
                 }
                 class SomeClass02 {
-                }
-                class SomeAbstructClass {
-                    <<abstract>>
                 }
                 class SomeInterface {
                     <<interface>>

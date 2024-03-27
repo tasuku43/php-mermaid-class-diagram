@@ -13,4 +13,13 @@ abstract class Relationship
     }
 
     abstract protected function render(): string;
+
+    public static function sortRelationships(array &$relationships): void
+    {
+        usort($relationships, function (Relationship $a, Relationship $b) {
+            $aKey = $a->from->nodeName() . ' ' . $a->to->nodeName();
+            $bKey = $b->from->nodeName() . ' ' . $b->to->nodeName();
+            return strcmp($aKey, $bKey);
+        });
+    }
 }
