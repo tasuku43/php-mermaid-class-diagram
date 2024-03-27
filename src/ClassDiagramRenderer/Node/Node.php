@@ -28,16 +28,19 @@ abstract class Node
     public function extends(Node $node): void
     {
         $this->extends[] = $node;
+        self::sortNodes($this->extends);
     }
 
     public function implements(Node $node): void
     {
         $this->implements[] = $node;
+        self::sortNodes($this->implements);
     }
 
     public function composition(Node $node): void
     {
         $this->properties[] = $node;
+        self::sortNodes($this->properties);
     }
 
     public function nodeName(): string
@@ -55,5 +58,12 @@ abstract class Node
             ...array_map(fn(Node $implementsNode) => new Realization($this, $implementsNode), $this->implements),
             ...array_map(fn(Node $propertyNode) => new Composition($this, $propertyNode), $this->properties),
         ];
+    }
+
+    public static function sortNodes(array &$nodes): void
+    {
+        usort($nodes, function (Node $a, Node $b) {
+            return strcmp($a->nodeName(), $b->nodeName());
+        });
     }
 }

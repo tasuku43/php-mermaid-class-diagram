@@ -25,6 +25,7 @@ class ClassDiagramBuilderTest extends TestCase
         $someClassA        = new Class_('SomeClassA');
         $someClassB        = new Class_('SomeClassB');
         $someClassC        = new Class_('SomeClassC');
+        $someClassD        = new Class_('SomeClassD');
         $someAbstructClass = new AbstractClass_('SomeAbstractClass');
         $someInterface     = new Interface_('SomeInterface');
 
@@ -38,6 +39,7 @@ class ClassDiagramBuilderTest extends TestCase
             ->addNode($someClassA)
             ->addNode($someClassB)
             ->addNode($someClassC)
+            ->addNode($someClassD)
             ->addNode($someInterface);
 
         $expectedDiagram->addRelationships(new Realization($someAbstructClass, $someInterface))
@@ -50,7 +52,7 @@ class ClassDiagramBuilderTest extends TestCase
             new NodeFinder()
         ));
 
-        self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/'));
+        self::assertSame($expectedDiagram->render(), $builder->build(__DIR__ . '/data/')->render());
     }
 
     public function testBuild_forFilePath(): void
@@ -76,6 +78,6 @@ class ClassDiagramBuilderTest extends TestCase
             new NodeFinder()
         ));
 
-        self::assertEquals($expectedDiagram, $builder->build(__DIR__ . '/data/SomeClassA.php'));
+        self::assertEquals($expectedDiagram->render(), $builder->build(__DIR__ . '/data/SomeClassA.php')->render());
     }
 }

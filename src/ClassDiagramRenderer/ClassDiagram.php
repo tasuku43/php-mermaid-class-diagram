@@ -22,12 +22,16 @@ class ClassDiagram
     {
         $this->nodes[] = $node;
 
+        Node::sortNodes($this->nodes);
+
         return $this;
     }
 
     public function addRelationships(Relationship ...$relationships): self
     {
         $this->relationships = [...$this->relationships, ...$relationships];
+
+        Relationship::sortRelationships($this->relationships);
 
         return $this;
     }
