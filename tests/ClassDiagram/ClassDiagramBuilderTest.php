@@ -18,7 +18,7 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Realization;
 
 class ClassDiagramBuilderTest extends TestCase
 {
-    public function tesBuild_forDir(): void
+    public function testBuild_forDir(): void
     {
         $expectedDiagram = new ClassDiagram();
 
