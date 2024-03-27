@@ -23,7 +23,7 @@ class ClassDiagramTest extends TestCase
                 class SomeClass02 {
                 }
                 class SomeAbstructClass {
-                    <<abstruct>>
+                    <<abstract>>
                 }
                 class SomeInterface {
                     <<interface>>

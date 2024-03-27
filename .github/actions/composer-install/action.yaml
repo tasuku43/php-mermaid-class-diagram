@@ -1,0 +1,17 @@
+name: Composer install
+
+permissions:
+  contents: read
+
+runs:
+  using: composite
+  steps:
+    - name: Cache Composer packages
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: Composer install
+      shell: bash
+      run: composer install --ignore-platform-reqs --no-interaction --no-scripts
