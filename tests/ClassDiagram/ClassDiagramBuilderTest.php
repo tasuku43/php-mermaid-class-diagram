@@ -12,9 +12,9 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\AbstractClass_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Class_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Interface_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Composition;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Inheritance;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Realization;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Composition;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Inheritance;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Realization;
 
 class ClassDiagramBuilderTest extends TestCase
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Relationship;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationship;
 
 class ClassDiagram
 {

@@ -21,7 +21,7 @@ class ClassDiagramBuilder
     {
         $classDigagram = new ClassDiagram();
 
-        foreach ($this->nodeParser->parse($path) as $node) {
+        foreach ($this->nodeParser->parse($path)->getAllNodes() as $node) {
             $classDigagram->addNode($node)->addRelationships(...$node->relationships());
         }
 
