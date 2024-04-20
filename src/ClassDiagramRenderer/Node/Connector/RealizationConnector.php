@@ -6,16 +6,17 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector;
 use PhpParser\Node;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Interface_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node as ClassDiagramNode;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Nodes;
 
 class RealizationConnector extends Connector
 {
-    public function connect(array $nodes): void
+    public function connect(Nodes $nodes): void
     {
-        $node = $nodes[$this->nodeName];
+        $node = $nodes->findByName($this->nodeName);
 
         foreach ($this->toConnectNodeNames as $toConnectNodeName) {
             $node->implements(
-                $nodes[$toConnectNodeName] ?? new Interface_($toConnectNodeName)
+                $nodes->findByName($toConnectNodeName) ?? new Interface_($toConnectNodeName)
             );
         }
     }

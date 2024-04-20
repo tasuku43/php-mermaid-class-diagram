@@ -11,14 +11,16 @@ use PhpParser\Node\Stmt\Property;
 use PhpParser\NodeFinder;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Class_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node as ClassDiagramNode;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Nodes;
 
 class CompositionConnector extends Connector
 {
-    public function connect(array $nodes): void
+    public function connect(Nodes $nodes): void
     {
-        $node = $nodes[$this->nodeName];
-        foreach ($this->toConnectNodeNames as $connectedNodeName) {
-            $node->composition($nodes[$connectedNodeName] ?? new Class_($connectedNodeName));
+        $node = $nodes->findByName($this->nodeName);
+
+        foreach ($this->toConnectNodeNames as $toConnectNodeName) {
+            $node->composition($nodes->findByName($toConnectNodeName) ?? new Class_($toConnectNodeName));
         }
     }
 

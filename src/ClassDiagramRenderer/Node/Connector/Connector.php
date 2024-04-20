@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector;
 
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Nodes;
 
 abstract class Connector
 {
@@ -15,8 +15,5 @@ abstract class Connector
     {
     }
 
-    /**
-     * @param Node[] $nodes
-     */
-    abstract public function connect(array $nodes): void;
+    abstract public function connect(Nodes $nodes): void;
 }

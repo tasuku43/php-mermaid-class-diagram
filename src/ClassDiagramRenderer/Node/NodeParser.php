@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
 
-use Closure;
 use Exception;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
@@ -15,7 +14,6 @@ use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\CompositionConnector;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\Connector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\InheritanceConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\RealizationConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Exception\CannnotParseToClassLikeException;
@@ -43,32 +41,18 @@ class NodeParser
     /**
      * @param string $path
      *
-     * @return ClassDiagramNode[]
+     * @return Nodes
      *
      * @throws Exception
      */
-    public function parse(string $path): array
+    public function parse(string $path): Nodes
     {
         $finder = str_ends_with($path, '.php')
             ? (new Finder())->in(pathinfo($path, PATHINFO_DIRNAME))->name(pathinfo($path, PATHINFO_BASENAME))->files()
             : (new Finder())->in($path)->name('*.php')->files();
 
-        [$nodes, $connectors] = $this->extractClassInformation($finder);
-
-        foreach ($connectors as $connector) {
-            $connector->connect($nodes);
-        }
-
-        return $nodes;
-    }
-
-    /**
-     * @return array{ClassDiagramNode[], Connector[]}
-     * @throws Exception
-     */
-    private function extractClassInformation(Finder $finder): array
-    {
-        $nodes = $connectors = [];
+        $nodes = new Nodes();
+        $connectors = [];
 
         foreach ($finder as $file) {
             try {
@@ -79,14 +63,18 @@ class NodeParser
 
             $classDiagramNode = $this->createClassDiagramNodeFromClassLike($classLike);
 
-            $nodes[$classDiagramNode->nodeName()] = $classDiagramNode;
+            $nodes->add($classDiagramNode);
 
             foreach ($this->connectorParsers as $connectorParser) {
                 $connectors[] = $connectorParser($classLike, $classDiagramNode);
             }
         }
 
-        return [$nodes, $connectors];
+        foreach ($connectors as $connector) {
+            $connector->connect($nodes);
+        }
+
+        return $nodes;
     }
 
     private function parseClassLike(string $code): Stmt\Class_|Stmt\Interface_
