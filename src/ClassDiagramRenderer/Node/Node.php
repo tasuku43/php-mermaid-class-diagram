@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
 
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Composition;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Inheritance;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Realization;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship\Relationship;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Composition;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Inheritance;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Realization;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationship;
 
 abstract class Node
 {

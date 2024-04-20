@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Relationship;
+namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship;
 
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
 
