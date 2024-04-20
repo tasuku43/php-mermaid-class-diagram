@@ -16,6 +16,10 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\CompositionConnector;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\Connector;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\InheritanceConnector;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\RealizationConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Exception\CannnotParseToClassLikeException;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node as ClassDiagramNode;
 
@@ -41,18 +45,22 @@ class NodeParser
             ? (new Finder())->in(pathinfo($path, PATHINFO_DIRNAME))->name(pathinfo($path, PATHINFO_BASENAME))->files()
             : (new Finder())->in($path)->name('*.php')->files();
 
-        [$nodes, $extends, $implements, $properties] = $this->extractClassInformation($finder);
+        [$nodes, $connectors] = $this->extractClassInformation($finder);
 
-        return $this->configureNodeRelations($extends, $implements, $properties, $nodes);
+        foreach ($connectors as $connector) {
+            $connector->connect($nodes);
+        }
+
+        return $nodes;
     }
 
     /**
-     * @return array{ClassDiagramNode[], array<string, string[]>, array<string, string[]>, array<string, string[]>}
+     * @return array{ClassDiagramNode[], Connector[]}
      * @throws Exception
      */
     private function extractClassInformation(Finder $finder): array
     {
-        $nodes = $extends = $implements = $properties = [];
+        $nodes = $connectors = [];
 
         foreach ($finder as $file) {
             try {
@@ -65,12 +73,13 @@ class NodeParser
 
             $nodes[$classDiagramNode->nodeName()] = $classDiagramNode;
 
-            $extends    = $this->extractExtendedClassesOrInterfaces($classLike, $classDiagramNode, $extends);
-            $implements = $this->extractImplementedInterfaces($classLike, $classDiagramNode, $implements);
-            $properties = $this->extractClassOrInterfaceProperties($classLike, $classDiagramNode, $properties);
-            $properties = $this->extractPropertiesFromConstructor($classLike, $classDiagramNode, $properties);
+            $connectors[] = $this->extractExtendedClassesOrInterfaces($classLike, $classDiagramNode);
+            $connectors[] = $this->extractImplementedInterfaces($classLike, $classDiagramNode);
+            $connectors[] = $this->extractClassOrInterfaceProperties($classLike, $classDiagramNode);
+            $connectors[] = $this->extractPropertiesFromConstructor($classLike, $classDiagramNode);
         }
-        return [$nodes, $extends, $implements, $properties];
+
+        return [$nodes, $connectors];
     }
 
     private function parseClassLike(string $code): Node\Stmt\Class_|Node\Stmt\Interface_
@@ -93,65 +102,51 @@ class NodeParser
         return $classLike;
     }
 
-    private function createDefaultExtendsNode(ClassDiagramNode $extended, string $extendsNodeName): ClassDiagramNode
-    {
-        return match (true) {
-            $extended instanceof Interface_ => new Interface_($extendsNodeName),
-            default => new Class_($extendsNodeName),
-        };
-    }
-
-    /**
-     * @return string[]
-     */
     private function extractExtendedClassesOrInterfaces(
         Node\Stmt\Interface_|Node\Stmt\Class_ $classLike,
         ClassDiagramNode                      $classDiagramNode,
-        array                                 $extends
-    ): array
+    ): InheritanceConnector
     {
+        $extendsNodeNames = [];
+
         if ($classLike->extends !== null) {
-            $extends[$classDiagramNode->nodeName()] = is_array($classLike->extends)
+            $extendsNodeNames = is_array($classLike->extends)
                 ? array_map(function (Node\Name $name) {
                     return (string)$name->getLast();
                 }, $classLike->extends)
                 : [(string)$classLike->extends->getLast()];
         }
-        return $extends;
+
+        return new InheritanceConnector($classDiagramNode->nodeName(), $extendsNodeNames);
     }
 
-    /**
-     * @return string[]
-     */
     private function extractImplementedInterfaces(
         Node\Stmt\Interface_|Node\Stmt\Class_ $classLike,
         ClassDiagramNode                      $classDiagramNode,
-        array                                 $implements
-    ): array
+    ): RealizationConnector
     {
+        $implementsNodeNames = [];
+
         if (property_exists($classLike, 'implements') && $classLike->implements !== []) {
-            $implements[$classDiagramNode->nodeName()] = array_map(function (Node\Name $name) {
+            $implementsNodeNames = array_map(function (Node\Name $name) {
                 return (string)$name->getLast();
             }, $classLike->implements);
         }
-        return $implements;
+
+        return new RealizationConnector($classDiagramNode->nodeName(), $implementsNodeNames);
     }
 
-    /**
-     * @return string[]
-     */
     private function extractClassOrInterfaceProperties(
         Node\Stmt\Interface_|Node\Stmt\Class_ $classLike,
         ClassDiagramNode                      $classDiagramNode,
-        array                                 $properties
-    ): array
+    ): CompositionConnector
     {
-        $properties[$classDiagramNode->nodeName()] = array_map(function (Property $property) {
+        $propertieNodeNames = array_map(function (Property $property) {
             return $property->type->getLast();
         }, array_filter($classLike->getProperties(),
                 fn(Property $property) => $property->type instanceof FullyQualified)
         );
-        return $properties;
+        return new CompositionConnector($classDiagramNode->nodeName(), $propertieNodeNames);
     }
 
     /**
@@ -168,15 +163,13 @@ class NodeParser
         };
     }
 
-    /**
-     * @return string[]
-     */
     private function extractPropertiesFromConstructor(
         Node\Stmt\Interface_|Node\Stmt\Class_ $classLike,
         ClassDiagramNode                      $classDiagramNode,
-        array                                 $properties
-    ): array
+    ): CompositionConnector
     {
+        $propertieNodeNames = [];
+
         $construct = $this->nodeFinder->findFirst($classLike, function (Node $node) {
             return $node instanceof ClassMethod && (string)$node->name === '__construct';
         });
@@ -187,35 +180,13 @@ class NodeParser
 
                 // If `visibirity` is not specified, flags is 0
                 if ($param->flags !== 0) {
-                    $properties[$classDiagramNode->nodeName()] = array_merge(
-                        $properties[$classDiagramNode->nodeName()],
+                    $propertieNodeNames = array_merge(
+                        $propertieNodeNames,
                         [$param->type->getLast()]
                     );
                 }
             }
         }
-        return $properties;
-    }
-
-    /**
-     * @return ClassDiagramNode[]
-     */
-    private function configureNodeRelations(array $extends, array $implements, array $properties, array $nodes): array
-    {
-        return array_values(array_map(function (ClassDiagramNode $node) use ($extends, $implements, $properties) {
-            $nodeName = $node->nodeName();
-            foreach ($extends[$nodeName] ?? [] as $extendsName) {
-                $node->extends(
-                    $nodes[$extendsName] ?? $this->createDefaultExtendsNode($node, $extendsName)
-                );
-            }
-            foreach ($implements[$nodeName] ?? [] as $implementsName) {
-                $node->implements($nodes[$implementsName] ?? new Interface_($implementsName));
-            }
-            foreach ($properties[$nodeName] ?? [] as $propertyName) {
-                $node->composition($nodes[$propertyName] ?? new Class_($propertyName));
-            }
-            return $node;
-        }, $nodes));
+        return new CompositionConnector($classDiagramNode->nodeName(), $propertieNodeNames);
     }
 }
