@@ -10,34 +10,32 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relation
 
 abstract class Node
 {
-    /** @var Node[] */
-    protected array $extends = [];
-
-    /** @var Node[] */
-    protected array $implements = [];
-
-    /** @var Node[] */
-    protected array $properties = [];
+    protected Nodes $extends;
+    protected Nodes $implements;
+    protected Nodes $properties;
 
     public function __construct(protected string $name)
     {
+        $this->extends = Nodes::empty();
+        $this->implements = Nodes::empty();
+        $this->properties = Nodes::empty();
     }
 
     abstract public function render(): string;
 
     public function extends(Node $node): void
     {
-        $this->extends[] = $node;
+        $this->extends->add($node);
     }
 
     public function implements(Node $node): void
     {
-        $this->implements[] = $node;
+        $this->implements->add($node);
     }
 
     public function composition(Node $node): void
     {
-        $this->properties[] = $node;
+        $this->properties->add($node);
     }
 
     public function nodeName(): string
@@ -51,9 +49,9 @@ abstract class Node
     public function relationships(): array
     {
         return [
-            ...array_map(fn(Node $extendsNode)    => new Inheritance($this, $extendsNode), $this->extends),
-            ...array_map(fn(Node $implementsNode) => new Realization($this, $implementsNode), $this->implements),
-            ...array_map(fn(Node $propertyNode) => new Composition($this, $propertyNode), $this->properties),
+            ...array_map(fn(Node $extendsNode)    => new Inheritance($this, $extendsNode), $this->extends->getAllNodes()),
+            ...array_map(fn(Node $implementsNode) => new Realization($this, $implementsNode), $this->implements->getAllNodes()),
+            ...array_map(fn(Node $propertyNode) => new Composition($this, $propertyNode), $this->properties->getAllNodes()),
         ];
     }
 

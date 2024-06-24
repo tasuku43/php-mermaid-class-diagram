@@ -15,6 +15,11 @@ class Nodes
         $this->nodes = [];
     }
 
+    public static function empty(): self
+    {
+        return new self();
+    }
+
     public function add(Node $node): self
     {
         $this->nodes[$node->nodeName()] = $node;
