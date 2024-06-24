@@ -22,8 +22,6 @@ class ClassDiagram
     {
         $this->nodes[] = $node;
 
-        Node::sortNodes($this->nodes);
-
         return $this;
     }
 
@@ -31,13 +29,14 @@ class ClassDiagram
     {
         $this->relationships = [...$this->relationships, ...$relationships];
 
-        Relationship::sortRelationships($this->relationships);
-
         return $this;
     }
 
     public function render(): string
     {
+        Node::sortNodes($this->nodes);
+        Relationship::sortRelationships($this->relationships);
+
         $output = "classDiagram\n";
 
         foreach ($this->nodes as $node) {

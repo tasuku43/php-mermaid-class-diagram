@@ -28,19 +28,16 @@ abstract class Node
     public function extends(Node $node): void
     {
         $this->extends[] = $node;
-        self::sortNodes($this->extends);
     }
 
     public function implements(Node $node): void
     {
         $this->implements[] = $node;
-        self::sortNodes($this->implements);
     }
 
     public function composition(Node $node): void
     {
         $this->properties[] = $node;
-        self::sortNodes($this->properties);
     }
 
     public function nodeName(): string
