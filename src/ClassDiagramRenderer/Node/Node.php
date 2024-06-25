@@ -60,7 +60,7 @@ abstract class Node
         $implements = $this->implements->getAllNodes();
         $properties = $this->properties->getAllNodes();
         $depends    = array_filter($this->depends->getAllNodes(), function (string $key) use ($extends, $implements, $properties) {
-            return !array_key_exists($key, $properties) && !array_key_exists($key, $extends) && !array_key_exists($key, $implements);
+            return !array_key_exists($key, $properties) && !array_key_exists($key, $extends) && !array_key_exists($key, $implements) && $key !== $this->nodeName();
         }, ARRAY_FILTER_USE_KEY);
 
         return [
