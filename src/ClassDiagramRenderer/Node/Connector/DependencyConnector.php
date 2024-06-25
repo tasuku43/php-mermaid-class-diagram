@@ -44,7 +44,10 @@ class DependencyConnector extends Connector
 
             if ($method->returnType instanceof Name) {
                 $parts                 = $method->returnType->getParts();
-                $dependencyNodeNames[] = end($parts);
+                $returnTypeName = end($parts);
+                if ($returnTypeName !== 'self') {
+                    $dependencyNodeNames[] = $returnTypeName;
+                }
             }
         }
 
