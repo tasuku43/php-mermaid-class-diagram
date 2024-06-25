@@ -29,7 +29,7 @@ class SomeClassA extends SomeAbstractClass
 {
     private SomeClassB $someClassB;
 
-    public function __construct(private SomeClassC $someClassC)
+    public function __construct(private SomeClassC $someClassC, SomeClassD $someClassD, private int $int)
     {
     }
 }
@@ -40,6 +40,22 @@ class SomeClassB
 
 class SomeClassC
 {
+}
+
+class SomeClassD
+{
+}
+
+class SomeClassE
+{
+    public function __construct(private SomeClassA $a)
+    {
+        $b = new SomeClassB;
+    }
+
+    public function dependAandC(SomeClassA $a): SomeClassC
+    {
+    }
 }
 
 abstract class SomeAbstractClass implements SomeInterface
@@ -54,14 +70,18 @@ interface SomeInterface
 ```shell
 $ vendor/bin/mermaid-class-diagram generate --path src
 classDiagram
-    class SomeClassC {
+    class SomeAbstractClass {
+        <<abstract>>
+    }
+    class SomeClassA {
     }
     class SomeClassB {
     }
-    class SomeAbstractClass {
-        <<abstruct>>
+    class SomeClassC {
     }
-    class SomeClassA {
+    class SomeClassD {
+    }
+    class SomeClassE {
     }
     class SomeInterface {
         <<interface>>
@@ -71,17 +91,25 @@ classDiagram
     SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
+    SomeClassD <.. SomeClassA: dependency
+    SomeClassE *-- SomeClassA: composition
+    SomeClassB <.. SomeClassE: dependency
+    SomeClassC <.. SomeClassE: dependency
 ```
 ```mermaid
 classDiagram
-    class SomeClassC {
+    class SomeAbstractClass {
+        <<abstract>>
+    }
+    class SomeClassA {
     }
     class SomeClassB {
     }
-    class SomeAbstractClass {
-        <<abstruct>>
+    class SomeClassC {
     }
-    class SomeClassA {
+    class SomeClassD {
+    }
+    class SomeClassE {
     }
     class SomeInterface {
         <<interface>>
@@ -91,6 +119,10 @@ classDiagram
     SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
+    SomeClassD <.. SomeClassA: dependency
+    SomeClassE *-- SomeClassA: composition
+    SomeClassB <.. SomeClassE: dependency
+    SomeClassC <.. SomeClassE: dependency
 ```
 ### Execute command by specifying a file
 ```shell
@@ -102,6 +134,7 @@ classDiagram
     SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
+    SomeClassD <.. SomeClassA: dependency
 ```
 ```mermaid
 classDiagram
@@ -111,6 +144,7 @@ classDiagram
     SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
+    SomeClassD <.. SomeClassA: dependency
 ```
 
 ## License
