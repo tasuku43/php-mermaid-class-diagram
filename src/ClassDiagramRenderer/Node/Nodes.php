@@ -31,6 +31,9 @@ class Nodes
         return $this->nodes[$nodeName] ?? null;
     }
 
+    /**
+     * @return Node[]
+     */
     public function getAllNodes(): array
     {
         return $this->nodes;
