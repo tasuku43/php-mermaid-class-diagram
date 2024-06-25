@@ -21,6 +21,8 @@ $ tree
 │   ├── SomeClassA.php
 │   ├── SomeClassB.php
 │   ├── SomeClassC.php
+│   ├── SomeClassD.php
+│   ├── SomeClassE.php
 │   └── SomeInterface.php
 └── vendor
 ```
