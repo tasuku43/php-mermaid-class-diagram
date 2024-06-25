@@ -18,10 +18,10 @@ abstract class Node
 
     public function __construct(protected string $name)
     {
-        $this->extends = Nodes::empty();
+        $this->extends    = Nodes::empty();
         $this->implements = Nodes::empty();
         $this->properties = Nodes::empty();
-        $this->depends = Nodes::empty();
+        $this->depends    = Nodes::empty();
     }
 
     abstract public function render(): string;
@@ -56,13 +56,21 @@ abstract class Node
      */
     public function relationships(): array
     {
+        $extends    = $this->extends->getAllNodes();
+        $implements = $this->implements->getAllNodes();
+        $properties = $this->properties->getAllNodes();
+        $depends    = array_filter($this->depends->getAllNodes(), function (string $key) use ($extends, $implements, $properties) {
+            return !array_key_exists($key, $properties) && !array_key_exists($key, $extends) && !array_key_exists($key, $implements);
+        }, ARRAY_FILTER_USE_KEY);
+
         return [
-            ...array_map(fn(Node $extendsNode)    => new Inheritance($this, $extendsNode), $this->extends->getAllNodes()),
-            ...array_map(fn(Node $implementsNode) => new Realization($this, $implementsNode), $this->implements->getAllNodes()),
-            ...array_map(fn(Node $propertyNode) => new Composition($this, $propertyNode), $this->properties->getAllNodes()),
-            ...array_map(fn(Node $dependNode) => new Dependency($this, $dependNode), $this->depends->getAllNodes()),
+            ...array_values(array_map(fn(Node $extendsNode) => new Inheritance($this, $extendsNode), $extends)),
+            ...array_values(array_map(fn(Node $implementsNode) => new Realization($this, $implementsNode), $implements)),
+            ...array_values(array_map(fn(Node $propertyNode) => new Composition($this, $propertyNode), $properties)),
+            ...array_values(array_map(fn(Node $dependNode) => new Dependency($this, $dependNode), $depends)),
         ];
     }
+
     public static function sortNodes(array &$nodes): void
     {
         usort($nodes, function (Node $a, Node $b) {

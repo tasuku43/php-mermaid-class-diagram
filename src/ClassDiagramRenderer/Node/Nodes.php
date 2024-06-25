@@ -36,6 +36,6 @@ class Nodes
      */
     public function getAllNodes(): array
     {
-        return array_values($this->nodes);
+        return $this->nodes;
     }
 }

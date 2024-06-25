@@ -52,7 +52,7 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Dependency($someClassA, $someClassD))
             ->addRelationships(new Dependency($someClassE, $someClassB))
             ->addRelationships(new Dependency($someClassE, $someClassC))
-            ->addRelationships(new Dependency($someClassE, $someClassA));
+            ->addRelationships(new Composition($someClassE, $someClassA));
 
         $builder = new ClassDiagramBuilder(new NodeParser(
             (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
