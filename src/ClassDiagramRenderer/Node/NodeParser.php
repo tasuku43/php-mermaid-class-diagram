@@ -14,6 +14,7 @@ use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\CompositionConnector;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\DependencyConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\InheritanceConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\RealizationConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Exception\CannnotParseToClassLikeException;
@@ -35,6 +36,7 @@ class NodeParser
             fn(Stmt\Interface_|Stmt\Class_ $classLike, ClassDiagramNode $classDiagramNode) => InheritanceConnector::parse($classLike, $classDiagramNode),
             fn(Stmt\Interface_|Stmt\Class_ $classLike, ClassDiagramNode $classDiagramNode) => RealizationConnector::parse($classLike, $classDiagramNode),
             fn(Stmt\Interface_|Stmt\Class_ $classLike, ClassDiagramNode $classDiagramNode) => CompositionConnector::parse($nodeFinder, $classLike, $classDiagramNode),
+            fn(Stmt\Interface_|Stmt\Class_ $classLike, ClassDiagramNode $classDiagramNode) => DependencyConnector::parse($nodeFinder, $classLike, $classDiagramNode),
         ];
     }
 
