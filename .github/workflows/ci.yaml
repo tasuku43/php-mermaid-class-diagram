@@ -10,7 +10,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extentions: xdebug
           tools: composer:v2
       - name: Checkout
         uses: actions/checkout@v4
