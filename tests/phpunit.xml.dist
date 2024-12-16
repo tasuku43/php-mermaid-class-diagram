@@ -5,7 +5,7 @@
          backupGlobals="false"
          colors="true"
          beStrictAboutTestsThatDoNotTestAnything="false"
-         bootstrap="./test/bootstrap.php">
+         bootstrap="./bootstrap.php">
     <testsuites>
         <testsuite name="Test Suite">
             <directory>.</directory>

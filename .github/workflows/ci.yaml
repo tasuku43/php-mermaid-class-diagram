@@ -10,10 +10,19 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+          extentions: xdebug, zlib
           tools: composer:v2
       - name: Checkout
         uses: actions/checkout@v4
       - name: Composer install
         uses: ./.github/actions/composer-install
       - name: Run PhpUnit tests
-        run: ./vendor/bin/phpunit tests
+        run: |
+          mkdir -p ${{ runner.temp }}/xdebug/output
+          php -d xdebug.mode=profile -d xdebug.output_dir=${{ runner.temp }}/xdebug/output ./vendor/bin/phpunit tests
+      - name: Upload xdebug profile
+        uses: actions/upload-artifact@v4
+        with:
+          name: xdebug-profile
+          path: ${{ runner.temp }}/xdebug/output
+          retention-days: 1
