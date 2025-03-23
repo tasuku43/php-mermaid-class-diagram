@@ -7,6 +7,6 @@ class Dependency extends Relationship
 {
     public function render(): string
     {
-        return sprintf(self::FORMAT, $this->to->nodeName(), '<..', $this->from->nodeName(), 'dependency');
+        return sprintf(self::FORMAT, $this->from->nodeName(), '..>',$this->to->nodeName(), 'dependency');
     }
 }
