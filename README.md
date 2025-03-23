@@ -93,10 +93,10 @@ classDiagram
     SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
-    SomeClassD <.. SomeClassA: dependency
+    SomeClassA ..> SomeClassD: dependency
     SomeClassE *-- SomeClassA: composition
-    SomeClassB <.. SomeClassE: dependency
-    SomeClassC <.. SomeClassE: dependency
+    SomeClassE ..> SomeClassB: dependency
+    SomeClassE ..> SomeClassC: dependency
 ```
 ```mermaid
 classDiagram
@@ -121,10 +121,10 @@ classDiagram
     SomeAbstractClass <|-- SomeClassA: inheritance
     SomeClassA *-- SomeClassB: composition
     SomeClassA *-- SomeClassC: composition
-    SomeClassD <.. SomeClassA: dependency
+    SomeClassA ..> SomeClassD: dependency
     SomeClassE *-- SomeClassA: composition
-    SomeClassB <.. SomeClassE: dependency
-    SomeClassC <.. SomeClassE: dependency
+    SomeClassE ..> SomeClassB: dependency
+    SomeClassE ..> SomeClassC: dependency
 ```
 ### Execute command by specifying a file
 ```shell
