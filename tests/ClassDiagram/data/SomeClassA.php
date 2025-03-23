@@ -10,4 +10,9 @@ class SomeClassA extends SomeAbstractClass
     public function __construct(private SomeClassC $someClassC, SomeClassD $someClassD, private int $int)
     {
     }
+
+    public static function getInstance(): self
+    {
+        return new self(new SomeClassC(), new SomeClassD(), 1);
+    }
 }
