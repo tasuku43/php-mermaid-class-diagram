@@ -45,9 +45,7 @@ class DependencyConnector extends Connector
             if ($method->returnType instanceof Name) {
                 $parts                 = $method->returnType->getParts();
                 $returnTypeName = end($parts);
-                if ($returnTypeName !== 'self') {
-                    $dependencyNodeNames[] = $returnTypeName;
-                }
+                $dependencyNodeNames[] = $returnTypeName;
             }
         }
 
@@ -61,7 +59,7 @@ class DependencyConnector extends Connector
         }
 
         // remove duplicates
-        $dependencyNodeNames = array_unique($dependencyNodeNames);
+        $dependencyNodeNames = array_filter(array_unique($dependencyNodeNames), fn($name) => $name !== 'self');
 
         return new DependencyConnector($classDiagramNode->nodeName(), $dependencyNodeNames);
     }
