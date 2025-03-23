@@ -56,7 +56,7 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Composition($someClassE, $someClassA));
 
         $builder = new ClassDiagramBuilder(new NodeParser(
-            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(7, 0)),
+            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(8, 0)),
             new NodeFinder()
         ));
 
@@ -84,7 +84,7 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Dependency($someClass, $defaultDependencyClass));
 
         $builder = new ClassDiagramBuilder(new NodeParser(
-            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(7, 0)),
+            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(8, 0)),
             new NodeFinder()
         ));
 

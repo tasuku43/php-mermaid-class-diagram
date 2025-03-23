@@ -34,7 +34,7 @@ class GenerateCommand extends Command
         $path = $input->getOption('path');
 
         $builder = new ClassDiagramBuilder(new NodeParser(
-            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(7, 0)),
+            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(8, 0)),
             new NodeFinder()
         ));
 
