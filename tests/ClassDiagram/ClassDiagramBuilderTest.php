@@ -5,6 +5,7 @@ namespace Tasuku43\Tests\MermaidClassDiagram\ClassDiagram;
 
 use PhpParser\NodeFinder;
 use PhpParser\ParserFactory;
+use PhpParser\PhpVersion;
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagram;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
@@ -55,7 +56,7 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Composition($someClassE, $someClassA));
 
         $builder = new ClassDiagramBuilder(new NodeParser(
-            (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
+            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(7, 0)),
             new NodeFinder()
         ));
 
@@ -83,7 +84,7 @@ class ClassDiagramBuilderTest extends TestCase
             ->addRelationships(new Dependency($someClass, $defaultDependencyClass));
 
         $builder = new ClassDiagramBuilder(new NodeParser(
-            (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
+            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(7, 0)),
             new NodeFinder()
         ));
 

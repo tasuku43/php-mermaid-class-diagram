@@ -37,7 +37,7 @@
     },
     "require": {
         "symfony/finder": "^7.0",
-        "nikic/php-parser": "^4.14",
+        "nikic/php-parser": "^4.14 || ^5.0",
         "symfony/console": "^7.0"
     }
 }

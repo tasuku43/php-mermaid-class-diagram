@@ -5,6 +5,7 @@ namespace Tasuku43\MermaidClassDiagram\Console\Command;
 
 use PhpParser\NodeFinder;
 use PhpParser\ParserFactory;
+use PhpParser\PhpVersion;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,7 +34,7 @@ class GenerateCommand extends Command
         $path = $input->getOption('path');
 
         $builder = new ClassDiagramBuilder(new NodeParser(
-            (new ParserFactory)->create(ParserFactory::PREFER_PHP7),
+            (new ParserFactory)->createForVersion(PhpVersion::fromComponents(7, 0)),
             new NodeFinder()
         ));
 
