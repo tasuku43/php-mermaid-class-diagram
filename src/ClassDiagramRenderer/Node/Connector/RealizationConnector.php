@@ -22,7 +22,7 @@ class RealizationConnector extends Connector
     }
 
     public static function parse(
-        Node\Stmt\Interface_|Node\Stmt\Class_ $classLike,
+        Node\Stmt\Interface_|Node\Stmt\Class_|Node\Stmt\Enum_ $classLike,
         ClassDiagramNode                      $classDiagramNode,
     ): self
     {

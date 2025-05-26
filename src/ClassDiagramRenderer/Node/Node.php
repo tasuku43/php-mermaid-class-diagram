@@ -8,6 +8,7 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Dependen
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Inheritance;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Realization;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationship;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\TraitUsage;
 
 abstract class Node
 {
@@ -15,6 +16,8 @@ abstract class Node
     protected Nodes $implements;
     protected Nodes $properties;
     protected Nodes $depends;
+    /** @var array<Relationship> */
+    protected array $extraRelationships;
 
     public function __construct(protected string $name)
     {
@@ -22,6 +25,7 @@ abstract class Node
         $this->implements = Nodes::empty();
         $this->properties = Nodes::empty();
         $this->depends    = Nodes::empty();
+        $this->extraRelationships = [];
     }
 
     abstract public function render(): string;
@@ -45,6 +49,11 @@ abstract class Node
     {
         $this->depends->add($node);
     }
+    
+    public function addRelationship(Relationship $relationship): void
+    {
+        $this->extraRelationships[] = $relationship;
+    }
 
     public function nodeName(): string
     {
@@ -60,7 +69,10 @@ abstract class Node
         $implements = $this->implements->getAllNodes();
         $properties = $this->properties->getAllNodes();
         $depends    = array_filter($this->depends->getAllNodes(), function (string $key) use ($extends, $implements, $properties) {
-            return !array_key_exists($key, $properties) && !array_key_exists($key, $extends) && !array_key_exists($key, $implements) && $key !== $this->nodeName();
+            return !array_key_exists($key, $properties) 
+                && !array_key_exists($key, $extends) 
+                && !array_key_exists($key, $implements) 
+                && $key !== $this->nodeName();
         }, ARRAY_FILTER_USE_KEY);
 
         return [
@@ -68,6 +80,7 @@ abstract class Node
             ...array_values(array_map(fn(Node $implementsNode) => new Realization($this, $implementsNode), $implements)),
             ...array_values(array_map(fn(Node $propertyNode) => new Composition($this, $propertyNode), $properties)),
             ...array_values(array_map(fn(Node $dependNode) => new Dependency($this, $dependNode), $depends)),
+            ...$this->extraRelationships,
         ];
     }
 
