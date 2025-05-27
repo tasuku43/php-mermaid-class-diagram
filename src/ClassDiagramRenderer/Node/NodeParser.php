@@ -33,10 +33,10 @@ class NodeParser
     )
     {
         $this->connectorParsers = [
-            fn(Stmt\Interface_|Stmt\Class_ $classLike, ClassDiagramNode $classDiagramNode) => InheritanceConnector::parse($classLike, $classDiagramNode),
-            fn(Stmt\Interface_|Stmt\Class_ $classLike, ClassDiagramNode $classDiagramNode) => RealizationConnector::parse($classLike, $classDiagramNode),
-            fn(Stmt\Interface_|Stmt\Class_ $classLike, ClassDiagramNode $classDiagramNode) => CompositionConnector::parse($nodeFinder, $classLike, $classDiagramNode),
-            fn(Stmt\Interface_|Stmt\Class_ $classLike, ClassDiagramNode $classDiagramNode) => DependencyConnector::parse($nodeFinder, $classLike, $classDiagramNode),
+            fn(Stmt\Interface_|Stmt\Class_|Stmt\Enum_|Stmt\Trait_ $classLike, ClassDiagramNode $classDiagramNode) => InheritanceConnector::parse($classLike, $classDiagramNode),
+            fn(Stmt\Interface_|Stmt\Class_|Stmt\Enum_|Stmt\Trait_ $classLike, ClassDiagramNode $classDiagramNode) => RealizationConnector::parse($classLike, $classDiagramNode),
+            fn(Stmt\Interface_|Stmt\Class_|Stmt\Enum_|Stmt\Trait_ $classLike, ClassDiagramNode $classDiagramNode) => CompositionConnector::parse($nodeFinder, $classLike, $classDiagramNode),
+            fn(Stmt\Interface_|Stmt\Class_|Stmt\Enum_|Stmt\Trait_ $classLike, ClassDiagramNode $classDiagramNode) => DependencyConnector::parse($nodeFinder, $classLike, $classDiagramNode),
         ];
     }
 
@@ -58,17 +58,20 @@ class NodeParser
 
         foreach ($finder as $file) {
             try {
-                $classLike = $this->parseClassLike($file->getContents());
+                // Get all class-like declarations from the file
+                $classLikes = $this->parseClassLikes($file->getContents());
+                
+                foreach ($classLikes as $classLike) {
+                    $classDiagramNode = $this->createClassDiagramNodeFromClassLike($classLike);
+                    
+                    $nodes->add($classDiagramNode);
+                    
+                    foreach ($this->connectorParsers as $connectorParser) {
+                        $connectors[] = $connectorParser($classLike, $classDiagramNode);
+                    }
+                }
             } catch (CannnotParseToClassLikeException) {
                 continue;
-            }
-
-            $classDiagramNode = $this->createClassDiagramNodeFromClassLike($classLike);
-
-            $nodes->add($classDiagramNode);
-
-            foreach ($this->connectorParsers as $connectorParser) {
-                $connectors[] = $connectorParser($classLike, $classDiagramNode);
             }
         }
 
@@ -79,7 +82,14 @@ class NodeParser
         return $nodes;
     }
 
-    private function parseClassLike(string $code): Stmt\Class_|Stmt\Interface_
+    /**
+     * Parse all class-like declarations in code
+     * 
+     * @param string $code
+     * @return array<Stmt\Class_|Stmt\Interface_|Stmt\Enum_|Stmt\Trait_>
+     * @throws CannnotParseToClassLikeException
+     */
+    private function parseClassLikes(string $code): array
     {
         $nodeTraverser = new NodeTraverser;
         $nodeTraverser->addVisitor(new NameResolver);
@@ -88,28 +98,41 @@ class NodeParser
         $ast = $this->parser->parse($code);
         $ast = $nodeTraverser->traverse($ast);
 
-        $classLike = $this->nodeFinder->findFirst($ast, function (Node $node) {
-            return $node instanceof Stmt\Class_
-                || $node instanceof Stmt\Interface_;
+        // Find all class-like nodes
+        $classLikes = $this->nodeFinder->findInstanceOf($ast, Stmt\ClassLike::class);
+        
+        // Find traits (not part of ClassLike in PHP-Parser)
+        $traits = $this->nodeFinder->findInstanceOf($ast, Stmt\Trait_::class);
+        
+        // Combine all nodes
+        $allClassLikes = array_merge($classLikes, $traits);
+        
+        // Filter to only include supported types
+        $validClassLikes = array_filter($allClassLikes, function ($node) {
+            return $node instanceof Stmt\Class_ 
+                || $node instanceof Stmt\Interface_
+                || $node instanceof Stmt\Enum_;
         });
-        if (!($classLike instanceof Stmt\Class_ || $classLike instanceof Stmt\Interface_)) {
+        
+        if (empty($validClassLikes)) {
             throw new CannnotParseToClassLikeException();
         }
 
-        return $classLike;
+        return $validClassLikes;
     }
 
     /**
      * @throws Exception
      */
-    private function createClassDiagramNodeFromClassLike(ClassLike $classLike): ClassDiagramNode
+    private function createClassDiagramNodeFromClassLike($classLike): ClassDiagramNode
     {
         return match (true) {
             $classLike instanceof Stmt\Class_ => $classLike->isAbstract()
                 ? new AbstractClass_((string)$classLike->name->name)
                 : new Class_((string)$classLike->name->name),
             $classLike instanceof Stmt\Interface_ => new Interface_((string)$classLike->name->name),
-            default => throw new Exception('Unexpected match value')
+            $classLike instanceof Stmt\Enum_ => new Enum_((string)$classLike->name->name),
+            default => throw new Exception('Unexpected match value: ' . get_class($classLike))
         };
     }
 }

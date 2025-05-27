@@ -31,13 +31,14 @@ class InheritanceConnector extends Connector
     }
 
     public static function parse(
-        Node\Stmt\Interface_|Node\Stmt\Class_ $classLike,
+        Node\Stmt\Interface_|Node\Stmt\Class_|Node\Stmt\Enum_ $classLike,
         ClassDiagramNode                      $classDiagramNode,
     ): self
     {
         $extendsNodeNames = [];
 
-        if ($classLike->extends !== null) {
+        // Skip inheritance check for enums as they don't have extends property
+        if (!($classLike instanceof Node\Stmt\Enum_) && property_exists($classLike, 'extends') && $classLike->extends !== null) {
             $extendsNodeNames = is_array($classLike->extends)
                 ? array_map(function (Node\Name $name) {
                     return (string)$name->getLast();
