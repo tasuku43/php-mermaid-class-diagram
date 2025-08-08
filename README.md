@@ -149,5 +149,23 @@ classDiagram
     SomeClassD <.. SomeClassA: dependency
 ```
 
+### Filter relationships
+You can hide specific relationship types via CSV with `--exclude-relationships`.
+
+- Allowed values (case-insensitive, aliases supported):
+  - `dependency` | `dependencies` | `dep` | `deps`
+  - `composition` | `compositions` | `comp`
+  - `inheritance` | `inheritances` | `extends`
+  - `realization` | `realizations` | `implements`
+
+Examples
+```shell
+# Hide dependencies and compositions
+$ vendor/bin/mermaid-class-diagram generate --path src --exclude-relationships dependency,composition
+
+# Hide only dependencies
+$ vendor/bin/mermaid-class-diagram generate --path src --exclude-relationships dependency
+```
+
 ## License
 The MIT License (MIT). Please see [LICENSE](https://github.com/tasuku43/php-mermaid-class-diagram/blob/main/LICENSE) for more information.
