@@ -9,6 +9,7 @@ use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
 
 class ClassDiagramBuilderTest extends TestCase
@@ -84,6 +85,45 @@ classDiagram
 
     AbstractController <|-- UserController: inheritance
     UserController *-- UserService: composition
+
+EOT;
+
+        $this->assertSame($expectedDiagram, $classDiagram);
+    }
+
+    public function testBuildFromSampleProjectOnlyPropertiesDeps(): void
+    {
+        $path = __DIR__ . '/../data/Project';
+
+        $classDiagram = $this->classDigagramBuilder
+            ->build($path)
+            ->render(new RenderOptions(false, true, true, true));
+
+        $expectedDiagram = <<<'EOT'
+classDiagram
+    class AbstractController {
+        <<abstract>>
+    }
+    class User {
+    }
+    class UserController {
+    }
+    class UserRepository {
+    }
+    class UserRepositoryInterface {
+        <<interface>>
+    }
+    class UserService {
+    }
+    class UserStatus {
+        <<enum>>
+    }
+
+    User *-- UserStatus: composition
+    AbstractController <|-- UserController: inheritance
+    UserController *-- UserService: composition
+    UserRepositoryInterface <|.. UserRepository: realization
+    UserService *-- UserRepositoryInterface: composition
 
 EOT;
 

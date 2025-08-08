@@ -4,7 +4,12 @@ declare(strict_types=1);
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Dependency;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Composition;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Inheritance;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Realization;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationship;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationships;
 
 class ClassDiagram
 {
@@ -13,10 +18,13 @@ class ClassDiagram
      */
     private array $nodes;
 
-    /**
-     * @var Relationship[]
-     */
-    private array $relationships = [];
+    private Relationships $relationships;
+
+    public function __construct()
+    {
+        $this->nodes = [];
+        $this->relationships = Relationships::empty();
+    }
 
     public function addNode(Node $node): self
     {
@@ -27,15 +35,17 @@ class ClassDiagram
 
     public function addRelationships(Relationship ...$relationships): self
     {
-        $this->relationships = [...$this->relationships, ...$relationships];
+        foreach ($relationships as $relationship) {
+            $this->relationships->add($relationship);
+        }
 
         return $this;
     }
 
-    public function render(): string
+    public function render(RenderOptions $options = null): string
     {
         Node::sortNodes($this->nodes);
-        Relationship::sortRelationships($this->relationships);
+        $this->relationships->sort();
 
         $output = "classDiagram\n";
 
@@ -45,7 +55,7 @@ class ClassDiagram
 
         $output .= "\n";
 
-        foreach ($this->relationships as $relationship) {
+        foreach ($this->relationships->filter($options)->getAll() as $relationship) {
             $output .= "    " . $relationship->render() . "\n";
         }
 
