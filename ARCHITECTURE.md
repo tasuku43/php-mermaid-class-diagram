@@ -82,11 +82,19 @@
   - Nodes: `class UserService {}` / Interface: `class UserRepositoryInterface { <<interface>> }`
   - Edges: `UserService *-- UserRepositoryInterface: composition`, `UserService ..> User: dependency`
 
+### Render options
+- `RenderOptions` controls view-time filtering without changing parsing (all default true via `RenderOptions::default()`):
+  - `includeDependencies`: show/hide `Dependency` edges (parameter/return/`new`-derived)
+  - `includeCompositions`: show/hide `Composition` edges (properties/constructor promotion/FQCN properties)
+  - `includeInheritances`: show/hide `Inheritance` edges (`extends`)
+  - `includeRealizations`: show/hide `Realization` edges (`implements`)
+
 ## CLI
 - Entry: `mermaid-class-diagram`
   - Boots `Symfony\Component\Console\Application` and registers `GenerateCommand`.
 - Command: `generate`
   - Option: `--path` (required; file or directory).
+  - Option: `--exclude-relationships` (CSV): exclude relationship types: `dependency,composition,inheritance,realization` (aliases supported)
   - Execution: `GenerateCommand::execute()` delegates to `ClassDiagramBuilder`, then writes the Mermaid text to stdout.
   - AST: `ParserFactory::createForVersion(PhpVersion::fromComponents(8, 1))` (PHP 8.1).
 
