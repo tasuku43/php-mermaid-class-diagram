@@ -5,6 +5,7 @@ namespace Tasuku43\Tests\MermaidClassDiagram\ClassDiagramRenderer;
 
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagram;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Class_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Interface_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Inheritance;
@@ -26,7 +27,7 @@ class ClassDiagramTest extends TestCase
         $this->assertSame($diagram, $resultDiagram);
         
         // Verify the node is included in the rendered output
-        $rendered = $diagram->render();
+        $rendered = $diagram->render(RenderOptions::default());
         $expectedOutput = <<<'EOT'
 classDiagram
     class TestClass {
@@ -57,7 +58,7 @@ EOT;
         $diagram->addNode($class1)->addNode($class2);
         
         // Verify the relationship is included in the rendered output
-        $rendered = $diagram->render();
+        $rendered = $diagram->render(RenderOptions::default());
         $expectedOutput = <<<'EOT'
 classDiagram
     class Class1 {
@@ -86,7 +87,7 @@ EOT;
                 ->addNode($interface)
                 ->addRelationships($relationship);
         
-        $rendered = $diagram->render();
+        $rendered = $diagram->render(RenderOptions::default());
         $expectedOutput = <<<'EOT'
 classDiagram
     class TestClass {

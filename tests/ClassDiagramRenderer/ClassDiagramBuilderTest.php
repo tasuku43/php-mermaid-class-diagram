@@ -33,7 +33,7 @@ class ClassDiagramBuilderTest extends TestCase
         
         $classDiagram = $this->classDigagramBuilder
             ->build($path)
-            ->render();
+            ->render(RenderOptions::default());
 
         $expectedDiagram = <<<'EOT'
 classDiagram
@@ -76,7 +76,7 @@ EOT;
 
         $classDiagram = $this->classDigagramBuilder
             ->build($path)
-            ->render();
+            ->render(RenderOptions::default());
 
         $expectedDiagram = <<<'EOT'
 classDiagram
