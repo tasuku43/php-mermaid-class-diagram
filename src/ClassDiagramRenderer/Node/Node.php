@@ -16,6 +16,7 @@ abstract class Node
     protected Nodes $implements;
     protected Nodes $properties;
     protected Nodes $depends;
+    protected Nodes $traits;
     /** @var array<Relationship> */
     protected array $extraRelationships;
 
@@ -25,6 +26,7 @@ abstract class Node
         $this->implements = Nodes::empty();
         $this->properties = Nodes::empty();
         $this->depends    = Nodes::empty();
+        $this->traits     = Nodes::empty();
         $this->extraRelationships = [];
     }
 
@@ -49,10 +51,10 @@ abstract class Node
     {
         $this->depends->add($node);
     }
-    
-    public function addRelationship(Relationship $relationship): void
+
+    public function useTrait(Node $trait): void
     {
-        $this->extraRelationships[] = $relationship;
+        $this->traits->add($trait);
     }
 
     public function nodeName(): string
