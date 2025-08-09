@@ -39,3 +39,17 @@
 ## Security and Configuration Tips
 - No runtime secrets required. Never execute the target PHP; static analysis only.
 - Validate `--path` input and avoid side effects during analysis.
+
+## Agent Workspace (`.codex/`)
+- Purpose: A git-ignored workspace at the project root for agent output. Use it freely for investigation notes, scratch files, and work plans.
+- Location: `./.codex/` (already listed in `.gitignore`). Do not commit contents.
+- Suggested structure:
+  - `/.codex/plans/`: Work plans, TODOs, execution checklists.
+  - `/.codex/analysis/`: Investigation notes, findings, benchmarks, quick experiments.
+  - `/.codex/out/`: Generated artifacts for manual inspection (e.g., temporary diagrams, logs).
+  - `/.codex/cache/`: Ephemeral cache or intermediate data.
+- Naming convention: `YYYYMMDD-HHMMSS-topic.md` (e.g., `20250809-1542-parser-investigation.md`).
+- Usage policy:
+  - Output investigation results and work plans to `.codex/` instead of the tracked repo.
+  - Keep outputs self-contained and disposable; no assumptions of stability.
+  - Do not store secrets; avoid side effects beyond this directory.
