@@ -33,7 +33,7 @@
         "mermaid-class-diagram"
     ],
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5 || ^12.0"
     },
     "require": {
         "symfony/finder": "^7.0",
