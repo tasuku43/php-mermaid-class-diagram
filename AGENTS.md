@@ -34,6 +34,7 @@
   - Purpose/context with related issue links.
   - Scope of changes and whether there are breaking changes.
   - CLI output and Mermaid before/after when relevant.
+ - Follow the PR template in `.github/pull_request_template.md` when opening a PR.
 
 ## Security and Configuration Tips
 - No runtime secrets required. Never execute the target PHP; static analysis only.
