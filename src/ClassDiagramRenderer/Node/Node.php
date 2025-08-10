@@ -57,6 +57,21 @@ abstract class Node
         $this->traits->add($trait);
     }
 
+    /**
+     * Return trait-derived compositions and dependencies for this node.
+     * @return array{array<string, Node>, array<string, Node>} [compositions, dependencies]
+     */
+    public function traitAggregates(): array
+    {
+        $traitCompositions = [];
+        $traitDependencies = [];
+        $visitedTraits = [];
+        foreach ($this->traits->getAllNodes() as $traitNode) {
+            $this->collectTraitRelations($traitNode, $visitedTraits, $traitCompositions, $traitDependencies);
+        }
+        return [$traitCompositions, $traitDependencies];
+    }
+
     public function nodeName(): string
     {
         return $this->name;
@@ -69,21 +84,65 @@ abstract class Node
     {
         $extends    = $this->extends->getAllNodes();
         $implements = $this->implements->getAllNodes();
-        $properties = $this->properties->getAllNodes();
-        $depends    = array_filter($this->depends->getAllNodes(), function (string $key) use ($extends, $implements, $properties) {
-            return !array_key_exists($key, $properties) 
-                && !array_key_exists($key, $extends) 
-                && !array_key_exists($key, $implements) 
+        $ownProperties = $this->properties->getAllNodes();
+        $ownDepends    = $this->depends->getAllNodes();
+
+        // Collect trait-derived relations (no mutation of own collections)
+        $traitCompositions = [];
+        $traitDependencies = [];
+        $visitedTraits = [];
+        foreach ($this->traits->getAllNodes() as $traitNode) {
+            $this->collectTraitRelations($traitNode, $visitedTraits, $traitCompositions, $traitDependencies);
+        }
+
+        // Final sets (properties win over dependencies)
+        $finalProperties = $ownProperties + $traitCompositions; // keep own over trait
+
+        $depsUnion = $ownDepends + $traitDependencies; // keep own over trait
+        $finalDepends = array_filter($depsUnion, function (string $key) use ($extends, $implements, $finalProperties) {
+            return !array_key_exists($key, $finalProperties)
+                && !array_key_exists($key, $extends)
+                && !array_key_exists($key, $implements)
                 && $key !== $this->nodeName();
         }, ARRAY_FILTER_USE_KEY);
 
         return [
             ...array_values(array_map(fn(Node $extendsNode) => new Inheritance($this, $extendsNode), $extends)),
             ...array_values(array_map(fn(Node $implementsNode) => new Realization($this, $implementsNode), $implements)),
-            ...array_values(array_map(fn(Node $propertyNode) => new Composition($this, $propertyNode), $properties)),
-            ...array_values(array_map(fn(Node $dependNode) => new Dependency($this, $dependNode), $depends)),
+            ...array_values(array_map(fn(Node $propertyNode) => new Composition($this, $propertyNode), $finalProperties)),
+            ...array_values(array_map(fn(Node $dependNode) => new Dependency($this, $dependNode), $finalDepends)),
             ...$this->extraRelationships,
         ];
+    }
+
+    /**
+     * Recursively collect composition/dependency from the given trait and nested traits.
+     *
+     * @param Node  $traitNode
+     * @param array $visited           visited trait names
+     * @param array $compositionsOut   [name => Node]
+     * @param array $dependenciesOut   [name => Node]
+     */
+    private function collectTraitRelations(Node $traitNode, array &$visited, array &$compositionsOut, array &$dependenciesOut): void
+    {
+        $traitName = $traitNode->nodeName();
+        if (isset($visited[$traitName])) {
+            return;
+        }
+        $visited[$traitName] = true;
+
+        // Direct compositions and dependencies declared in the trait
+        foreach ($traitNode->properties->getAllNodes() as $name => $node) {
+            $compositionsOut[$name] = $node;
+        }
+        foreach ($traitNode->depends->getAllNodes() as $name => $node) {
+            $dependenciesOut[$name] = $node;
+        }
+
+        // Nested trait uses
+        foreach ($traitNode->traits->getAllNodes() as $nestedTrait) {
+            $this->collectTraitRelations($nestedTrait, $visited, $compositionsOut, $dependenciesOut);
+        }
     }
 
     public static function sortNodes(array &$nodes): void
