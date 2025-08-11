@@ -21,25 +21,22 @@ class DependencyConnectorTest extends TestCase
      */
     public function testConnect(): void
     {
-        // Set up diagram nodes
-        $dependentNode = new DiagramClass('Dependent');
-        $dependencyNode = new DiagramClass('Dependency');
-        
-        // Set up nodes collection
+        $dependent = new DiagramClass('Dependent');
+        $dependency = new DiagramClass('Dependency');
+
         $nodes = new Nodes();
-        $nodes->add($dependencyNode);
-        $nodes->add($dependentNode);
-        
-        // Create connector
+        $nodes->add($dependent);
+        $nodes->add($dependency);
+
         $connector = new DependencyConnector('Dependent', ['Dependency']);
-        
-        // Connect the nodes
         $connector->connect($nodes);
-        
-        // Verify the connection
-        $relationships = $dependentNode->relationships();
-        $this->assertCount(1, $relationships);
-        $this->assertStringContainsString('Dependent ..> Dependency: dependency', $relationships[0]->render());
+
+        $node = $nodes->findByName('Dependent');
+
+        $expected = new DiagramClass('Dependent');
+        $expected->depend($dependency);
+
+        $this->assertEquals($node, $expected);
     }
 
     /**

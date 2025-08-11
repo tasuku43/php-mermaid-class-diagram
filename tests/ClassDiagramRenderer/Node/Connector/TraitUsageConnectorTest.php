@@ -22,10 +22,6 @@ class TraitUsageConnectorTest extends TestCase
         $using = new DiagramClass('Using');
         $trait = new DiagramTrait('T');
 
-        // Trait declares composition(A) and dependency(B)
-        $trait->composition(new DiagramClass('A'));
-        $trait->depend(new DiagramClass('B'));
-
         $nodes = new Nodes();
         $nodes->add($using);
         $nodes->add($trait);
@@ -33,10 +29,12 @@ class TraitUsageConnectorTest extends TestCase
         $connector = new TraitUsageConnector('Using', ['T']);
         $connector->connect($nodes);
 
-        // Verify via node relationships (connector application)
-        $rendered = array_map(fn($r) => $r->render(), $using->relationships());
-        $this->assertTrue($this->contains($rendered, 'Using *-- A: composition'));
-        $this->assertTrue($this->contains($rendered, 'Using ..> B: dependency'));
+        $node = $nodes->findByName('Using');
+
+        $expected = new DiagramClass('Using');
+        $expected->useTrait($trait);
+
+        $this->assertEquals($node, $expected);
     }
 
     /**

@@ -21,25 +21,22 @@ class CompositionConnectorTest extends TestCase
      */
     public function testConnect(): void
     {
-        // Set up diagram nodes
-        $containerNode = new DiagramClass('Container');
-        $containedNode = new DiagramClass('Contained');
-        
-        // Set up nodes collection
+        $container = new DiagramClass('Container');
+        $contained = new DiagramClass('Contained');
+
         $nodes = new Nodes();
-        $nodes->add($containedNode);
-        $nodes->add($containerNode);
-        
-        // Create connector
+        $nodes->add($container);
+        $nodes->add($contained);
+
         $connector = new CompositionConnector('Container', ['Contained']);
-        
-        // Connect the nodes
         $connector->connect($nodes);
-        
-        // Verify the connection
-        $relationships = $containerNode->relationships();
-        $this->assertCount(1, $relationships);
-        $this->assertStringContainsString('Container *-- Contained: composition', $relationships[0]->render());
+
+        $node = $nodes->findByName('Container');
+
+        $expected = new DiagramClass('Container');
+        $expected->composition($contained);
+
+        $this->assertEquals($node, $expected);
     }
 
     /**

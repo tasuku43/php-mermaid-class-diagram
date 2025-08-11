@@ -22,25 +22,22 @@ class RealizationConnectorTest extends TestCase
      */
     public function testConnect(): void
     {
-        // Set up diagram nodes
-        $classNode = new DiagramClass('TestClass');
-        $interfaceNode = new DiagramInterface('TestInterface');
-        
-        // Set up nodes collection
+        $class = new DiagramClass('TestClass');
+        $interface = new DiagramInterface('TestInterface');
+
         $nodes = new Nodes();
-        $nodes->add($interfaceNode);
-        $nodes->add($classNode);
-        
-        // Create connector
+        $nodes->add($class);
+        $nodes->add($interface);
+
         $connector = new RealizationConnector('TestClass', ['TestInterface']);
-        
-        // Connect the nodes
         $connector->connect($nodes);
-        
-        // Verify the connection
-        $relationships = $classNode->relationships();
-        $this->assertCount(1, $relationships);
-        $this->assertStringContainsString('TestInterface <|.. TestClass: realization', $relationships[0]->render());
+
+        $node = $nodes->findByName('TestClass');
+
+        $expected = new DiagramClass('TestClass');
+        $expected->implements($interface);
+
+        $this->assertEquals($node, $expected);
     }
 
     /**

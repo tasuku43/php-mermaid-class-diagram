@@ -22,25 +22,22 @@ class InheritanceConnectorTest extends TestCase
      */
     public function testConnect(): void
     {
-        // Set up diagram nodes
-        $childNode = new DiagramClass('Child');
-        $parentNode = new DiagramClass('Parent');
-        
-        // Set up nodes collection
+        $child = new DiagramClass('Child');
+        $parent = new DiagramClass('Parent');
+
         $nodes = new Nodes();
-        $nodes->add($parentNode);
-        $nodes->add($childNode);
-        
-        // Create connector
+        $nodes->add($child);
+        $nodes->add($parent);
+
         $connector = new InheritanceConnector('Child', ['Parent']);
-        
-        // Connect the nodes
         $connector->connect($nodes);
-        
-        // Verify the connection
-        $relationships = $childNode->relationships();
-        $this->assertCount(1, $relationships);
-        $this->assertStringContainsString('Parent <|-- Child: inheritance', $relationships[0]->render());
+
+        $node = $nodes->findByName('Child');
+
+        $expected = new DiagramClass('Child');
+        $expected->extends($parent);
+
+        $this->assertEquals($node, $expected);
     }
 
     /**
