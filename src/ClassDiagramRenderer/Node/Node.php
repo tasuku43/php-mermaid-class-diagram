@@ -57,20 +57,7 @@ abstract class Node
         $this->traits->add($trait);
     }
 
-    /**
-     * Return trait-derived compositions and dependencies for this node.
-     * @return array{array<string, Node>, array<string, Node>} [compositions, dependencies]
-     */
-    public function traitAggregates(): array
-    {
-        $traitCompositions = [];
-        $traitDependencies = [];
-        $visitedTraits = [];
-        foreach ($this->traits->getAllNodes() as $traitNode) {
-            $this->collectTraitRelations($traitNode, $visitedTraits, $traitCompositions, $traitDependencies);
-        }
-        return [$traitCompositions, $traitDependencies];
-    }
+    // Intentionally left without public API; trait aggregation is done in relationships()
 
     public function nodeName(): string
     {

@@ -5,6 +5,7 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Exception;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Trait_ as DiagramTrait;
 
 class ClassDiagramBuilder
 {

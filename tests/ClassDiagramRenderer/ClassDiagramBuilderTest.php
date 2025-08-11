@@ -40,6 +40,11 @@ classDiagram
     class AbstractController {
         <<abstract>>
     }
+    class AuditLogger {
+    }
+    class RepositoryAwareTrait {
+        <<trait>>
+    }
     class User {
     }
     class UserController {
@@ -55,12 +60,16 @@ classDiagram
         <<enum>>
     }
 
+    RepositoryAwareTrait *-- AuditLogger: composition
+    RepositoryAwareTrait ..> User: dependency
+    RepositoryAwareTrait *-- UserRepositoryInterface: composition
     User *-- UserStatus: composition
     AbstractController <|-- UserController: inheritance
     UserController *-- UserService: composition
     UserRepository ..> User: dependency
     UserRepositoryInterface <|.. UserRepository: realization
     UserRepositoryInterface ..> User: dependency
+    UserService *-- AuditLogger: composition
     UserService ..> InvalidArgumentException: dependency
     UserService ..> User: dependency
     UserService *-- UserRepositoryInterface: composition
@@ -104,6 +113,11 @@ classDiagram
     class AbstractController {
         <<abstract>>
     }
+    class AuditLogger {
+    }
+    class RepositoryAwareTrait {
+        <<trait>>
+    }
     class User {
     }
     class UserController {
@@ -119,10 +133,13 @@ classDiagram
         <<enum>>
     }
 
+    RepositoryAwareTrait *-- AuditLogger: composition
+    RepositoryAwareTrait *-- UserRepositoryInterface: composition
     User *-- UserStatus: composition
     AbstractController <|-- UserController: inheritance
     UserController *-- UserService: composition
     UserRepositoryInterface <|.. UserRepository: realization
+    UserService *-- AuditLogger: composition
     UserService *-- UserRepositoryInterface: composition
 
 EOT;
