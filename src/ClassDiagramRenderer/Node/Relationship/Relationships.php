@@ -34,7 +34,11 @@ class Relationships
 
     public function sort(): void
     {
-        Relationship::sortRelationships($this->relationships);
+        usort($this->relationships, function (Relationship $a, Relationship $b) {
+            $aKey = $a->from->nodeName() . ' ' . $a->to->nodeName();
+            $bKey = $b->from->nodeName() . ' ' . $b->to->nodeName();
+            return strcmp($aKey, $bKey);
+        });
     }
 
     public function filter(RenderOptions $options): self
