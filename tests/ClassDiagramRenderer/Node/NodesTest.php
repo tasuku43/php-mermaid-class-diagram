@@ -5,10 +5,41 @@ namespace Tasuku43\Tests\MermaidClassDiagram\ClassDiagramRenderer\Node;
 
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Class_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Nodes;
 
 class NodesTest extends TestCase
 {
+    public function testSort(): void
+    {
+        $nodes = Nodes::empty();
+
+        $c = $this->mockNode('C');
+        $a = $this->mockNode('A');
+        $b = $this->mockNode('B');
+
+        // Add out of order
+        $nodes->add($c)->add($a)->add($b);
+
+        // Sort by name
+        $nodes->sort();
+        $sorted = array_values($nodes->getAllNodes());
+
+        $this->assertSame('A', $sorted[0]->nodeName());
+        $this->assertSame('B', $sorted[1]->nodeName());
+        $this->assertSame('C', $sorted[2]->nodeName());
+    }
+
+    private function mockNode(string $name): Node
+    {
+        return new class($name) extends Node {
+            public function render(): string
+            {
+                return "class {$this->name} {}";
+            }
+        };
+    }
+
     /**
      * Test the add and getAllNodes methods
      */

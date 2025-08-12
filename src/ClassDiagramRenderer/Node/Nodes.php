@@ -31,6 +31,12 @@ class Nodes
         return $this->nodes[$nodeName] ?? null;
     }
 
+    public function sort(): void
+    {
+        // Keys are node names; sort by key keeps deterministic order
+        ksort($this->nodes);
+    }
+
     /**
      * @return Node[]
      */

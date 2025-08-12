@@ -131,11 +131,4 @@ abstract class Node
             $this->collectTraitRelations($nestedTrait, $visited, $compositionsOut, $dependenciesOut);
         }
     }
-
-    public static function sortNodes(array &$nodes): void
-    {
-        usort($nodes, function (Node $a, Node $b) {
-            return strcmp($a->nodeName(), $b->nodeName());
-        });
-    }
 }

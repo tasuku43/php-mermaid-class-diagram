@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Nodes;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Dependency;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Composition;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Inheritance;
@@ -13,22 +14,19 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relation
 
 class ClassDiagram
 {
-    /**
-     * @var Node[]
-     */
-    private array $nodes;
+    private Nodes $nodes;
 
     private Relationships $relationships;
 
     public function __construct()
     {
-        $this->nodes = [];
+        $this->nodes = Nodes::empty();
         $this->relationships = Relationships::empty();
     }
 
     public function addNode(Node $node): self
     {
-        $this->nodes[] = $node;
+        $this->nodes->add($node);
 
         return $this;
     }
@@ -44,12 +42,13 @@ class ClassDiagram
 
     public function render(RenderOptions $options = null): string
     {
-        Node::sortNodes($this->nodes);
+        $this->nodes->sort();
+        $nodes = $this->nodes->getAllNodes();
         $this->relationships->sort();
 
         $output = "classDiagram\n";
 
-        foreach ($this->nodes as $node) {
+        foreach ($nodes as $node) {
             $output .= "    " . $node->render() . "\n";
         }
 

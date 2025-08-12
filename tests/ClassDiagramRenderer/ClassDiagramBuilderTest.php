@@ -42,6 +42,8 @@ classDiagram
     }
     class AuditLogger {
     }
+    class AuditTarget {
+    }
     class RepositoryAwareTrait {
         <<trait>>
     }
@@ -61,6 +63,7 @@ classDiagram
     }
 
     RepositoryAwareTrait *-- AuditLogger: composition
+    RepositoryAwareTrait ..> AuditTarget: dependency
     RepositoryAwareTrait ..> User: dependency
     RepositoryAwareTrait *-- UserRepositoryInterface: composition
     User *-- UserStatus: composition
@@ -70,6 +73,7 @@ classDiagram
     UserRepositoryInterface <|.. UserRepository: realization
     UserRepositoryInterface ..> User: dependency
     UserService *-- AuditLogger: composition
+    UserService ..> AuditTarget: dependency
     UserService ..> InvalidArgumentException: dependency
     UserService ..> User: dependency
     UserService *-- UserRepositoryInterface: composition
@@ -114,6 +118,8 @@ classDiagram
         <<abstract>>
     }
     class AuditLogger {
+    }
+    class AuditTarget {
     }
     class RepositoryAwareTrait {
         <<trait>>
