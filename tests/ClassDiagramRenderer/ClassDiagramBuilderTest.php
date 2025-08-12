@@ -97,13 +97,13 @@ EOT;
         $this->assertSame($expectedDiagram, $classDiagram);
     }
 
-    public function testBuildFromSampleProjectOnlyPropertiesDeps(): void
+    public function testBuildFromSampleProjectOnlyPropertiesDepsFlatten(): void
     {
         $path = __DIR__ . '/../data/Project';
 
         $classDiagram = $this->classDigagramBuilder
             ->build($path)
-            ->render(new RenderOptions(false, true, true, true));
+            ->render(new RenderOptions(false, true, true, true, \Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode::Flatten));
 
         $expectedDiagram = <<<'EOT'
 classDiagram
@@ -129,6 +129,55 @@ classDiagram
         <<enum>>
     }
 
+    User *-- UserStatus: composition
+    AbstractController <|-- UserController: inheritance
+    UserController *-- UserService: composition
+    UserRepositoryInterface <|.. UserRepository: realization
+    UserService *-- AuditLogger: composition
+    UserService *-- UserRepositoryInterface: composition
+
+EOT;
+
+        $this->assertSame($expectedDiagram, $classDiagram);
+    }
+
+    public function testBuildFromSampleProjectOnlyPropertiesDepsWithTraits(): void
+    {
+        $path = __DIR__ . '/../data/Project';
+
+        $classDiagram = $this->classDigagramBuilder
+            ->build($path)
+            ->render(new RenderOptions(false, true, true, true, \Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode::WithTraits));
+
+        $expectedDiagram = <<<'EOT'
+classDiagram
+    class AbstractController {
+        <<abstract>>
+    }
+    class AuditLogger {
+    }
+    class AuditTarget {
+    }
+    class RepositoryAwareTrait {
+        <<trait>>
+    }
+    class User {
+    }
+    class UserController {
+    }
+    class UserRepository {
+    }
+    class UserRepositoryInterface {
+        <<interface>>
+    }
+    class UserService {
+    }
+    class UserStatus {
+        <<enum>>
+    }
+
+    RepositoryAwareTrait *-- AuditLogger: composition
+    RepositoryAwareTrait *-- UserRepositoryInterface: composition
     User *-- UserStatus: composition
     AbstractController <|-- UserController: inheritance
     UserController *-- UserService: composition
