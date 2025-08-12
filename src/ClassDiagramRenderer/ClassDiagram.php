@@ -5,12 +5,9 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Nodes;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Dependency;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Composition;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Inheritance;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Realization;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationship;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationships;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
 class ClassDiagram
 {

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship;
 
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Trait_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
 class Relationships
 {

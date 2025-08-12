@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
 class Nodes
 {

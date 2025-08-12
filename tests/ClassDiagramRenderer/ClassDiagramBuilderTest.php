@@ -9,8 +9,8 @@ use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
 class ClassDiagramBuilderTest extends TestCase
 {

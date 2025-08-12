@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
+namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 
 class RenderOptions
 {
