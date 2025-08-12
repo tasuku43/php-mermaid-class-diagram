@@ -44,9 +44,6 @@ classDiagram
     }
     class AuditTarget {
     }
-    class RepositoryAwareTrait {
-        <<trait>>
-    }
     class User {
     }
     class UserController {
@@ -62,10 +59,6 @@ classDiagram
         <<enum>>
     }
 
-    RepositoryAwareTrait *-- AuditLogger: composition
-    RepositoryAwareTrait ..> AuditTarget: dependency
-    RepositoryAwareTrait ..> User: dependency
-    RepositoryAwareTrait *-- UserRepositoryInterface: composition
     User *-- UserStatus: composition
     AbstractController <|-- UserController: inheritance
     UserController *-- UserService: composition
@@ -121,9 +114,6 @@ classDiagram
     }
     class AuditTarget {
     }
-    class RepositoryAwareTrait {
-        <<trait>>
-    }
     class User {
     }
     class UserController {
@@ -139,8 +129,6 @@ classDiagram
         <<enum>>
     }
 
-    RepositoryAwareTrait *-- AuditLogger: composition
-    RepositoryAwareTrait *-- UserRepositoryInterface: composition
     User *-- UserStatus: composition
     AbstractController <|-- UserController: inheritance
     UserController *-- UserService: composition

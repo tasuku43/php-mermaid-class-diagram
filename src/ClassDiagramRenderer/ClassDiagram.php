@@ -42,9 +42,8 @@ class ClassDiagram
 
     public function render(RenderOptions $options = null): string
     {
-        $this->nodes->sort();
-        $nodes = $this->nodes->getAllNodes();
-        $this->relationships->sort();
+        $nodes        = $this->nodes->filter($options)->sort()->getAll();
+        $relationships = $this->relationships->filter($options)->sort()->getAll();
 
         $output = "classDiagram\n";
 
@@ -54,7 +53,7 @@ class ClassDiagram
 
         $output .= "\n";
 
-        foreach ($this->relationships->filter($options)->getAll() as $relationship) {
+        foreach ($relationships as $relationship) {
             $output .= "    " . $relationship->render() . "\n";
         }
 

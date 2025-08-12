@@ -69,16 +69,16 @@ abstract class Node
      */
     public function relationships(): array
     {
-        $extends    = $this->extends->getAllNodes();
-        $implements = $this->implements->getAllNodes();
-        $ownProperties = $this->properties->getAllNodes();
-        $ownDepends    = $this->depends->getAllNodes();
+        $extends    = $this->extends->getAll();
+        $implements = $this->implements->getAll();
+        $ownProperties = $this->properties->getAll();
+        $ownDepends    = $this->depends->getAll();
 
         // Collect trait-derived relations (no mutation of own collections)
         $traitCompositions = [];
         $traitDependencies = [];
         $visitedTraits = [];
-        foreach ($this->traits->getAllNodes() as $traitNode) {
+        foreach ($this->traits->getAll() as $traitNode) {
             $this->collectTraitRelations($traitNode, $visitedTraits, $traitCompositions, $traitDependencies);
         }
 
@@ -119,15 +119,15 @@ abstract class Node
         $visited[$traitName] = true;
 
         // Direct compositions and dependencies declared in the trait
-        foreach ($traitNode->properties->getAllNodes() as $name => $node) {
+        foreach ($traitNode->properties->getAll() as $name => $node) {
             $compositionsOut[$name] = $node;
         }
-        foreach ($traitNode->depends->getAllNodes() as $name => $node) {
+        foreach ($traitNode->depends->getAll() as $name => $node) {
             $dependenciesOut[$name] = $node;
         }
 
         // Nested trait uses
-        foreach ($traitNode->traits->getAllNodes() as $nestedTrait) {
+        foreach ($traitNode->traits->getAll() as $nestedTrait) {
             $this->collectTraitRelations($nestedTrait, $visited, $compositionsOut, $dependenciesOut);
         }
     }

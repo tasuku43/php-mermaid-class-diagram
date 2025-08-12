@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 
 class Nodes
 {
@@ -31,16 +32,31 @@ class Nodes
         return $this->nodes[$nodeName] ?? null;
     }
 
-    public function sort(): void
+    public function sort(): self
     {
         // Keys are node names; sort by key keeps deterministic order
         ksort($this->nodes);
+
+        return $this;
+    }
+
+    public function filter(RenderOptions $options): self
+    {
+        $filtered = new self();
+        foreach ($this->nodes as $node) {
+            if (!$options->includeTraits && $node instanceof Trait_) {
+                continue;
+            }
+            $filtered->add($node);
+        }
+
+        return $filtered;
     }
 
     /**
      * @return Node[]
      */
-    public function getAllNodes(): array
+    public function getAll(): array
     {
         return $this->nodes;
     }

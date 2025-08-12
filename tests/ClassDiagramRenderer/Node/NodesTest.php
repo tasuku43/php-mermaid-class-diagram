@@ -23,7 +23,7 @@ class NodesTest extends TestCase
 
         // Sort by name
         $nodes->sort();
-        $sorted = array_values($nodes->getAllNodes());
+        $sorted = array_values($nodes->getAll());
 
         $this->assertSame('A', $sorted[0]->nodeName());
         $this->assertSame('B', $sorted[1]->nodeName());
@@ -52,7 +52,7 @@ class NodesTest extends TestCase
         $nodes->add($classA);
         $nodes->add($classB);
         
-        $allNodes = $nodes->getAllNodes();
+        $allNodes = $nodes->getAll();
         $this->assertCount(2, $allNodes);
         $this->assertArrayHasKey('ClassA', $allNodes);
         $this->assertArrayHasKey('ClassB', $allNodes);
@@ -68,7 +68,7 @@ class NodesTest extends TestCase
         $nodes = Nodes::empty();
         
         $this->assertInstanceOf(Nodes::class, $nodes);
-        $this->assertCount(0, $nodes->getAllNodes());
+        $this->assertCount(0, $nodes->getAll());
     }
     
     /**
@@ -102,7 +102,7 @@ class NodesTest extends TestCase
         $nodes->add($classA1);
         $nodes->add($classA2); // Should replace the first one
         
-        $allNodes = $nodes->getAllNodes();
+        $allNodes = $nodes->getAll();
         $this->assertCount(1, $allNodes);
         $this->assertSame($classA2, $allNodes['ClassA']); // Should be the second instance
     }
