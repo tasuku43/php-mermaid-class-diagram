@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode;
+
 class RenderOptions
 {
     public function __construct(
@@ -10,12 +12,12 @@ class RenderOptions
         public bool $includeCompositions,
         public bool $includeInheritances,
         public bool $includeRealizations,
-        public bool $includeTraits = false,
+        public TraitRenderMode $traitRenderMode = TraitRenderMode::Flatten,
     ) {
     }
 
     public static function default(): self
     {
-        return new self(true, true, true, true, false);
+        return new self(true, true, true, true, TraitRenderMode::Flatten);
     }
 }

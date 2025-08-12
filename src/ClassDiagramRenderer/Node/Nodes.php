@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode;
 
 class Nodes
 {
@@ -44,7 +45,7 @@ class Nodes
     {
         $filtered = new self();
         foreach ($this->nodes as $node) {
-            if (!$options->includeTraits && $node instanceof Trait_) {
+            if (!$options->traitRenderMode->isWithTraits() && $node instanceof Trait_) {
                 continue;
             }
             $filtered->add($node);

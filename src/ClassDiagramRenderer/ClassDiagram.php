@@ -5,9 +5,9 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Nodes;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationship;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Relationships;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
 class ClassDiagram
 {
@@ -37,7 +37,7 @@ class ClassDiagram
         return $this;
     }
 
-    public function render(RenderOptions $options = null): string
+    public function render(RenderOptions $options): string
     {
         $nodes        = $this->nodes->filter($options)->sort()->getAll();
         $relationships = $this->relationships->filter($options)->sort()->getAll();
