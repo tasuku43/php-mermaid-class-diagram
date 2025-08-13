@@ -182,8 +182,7 @@ classDiagram
     AbstractController <|-- UserController: inheritance
     UserController *-- UserService: composition
     UserRepositoryInterface <|.. UserRepository: realization
-    UserService *-- AuditLogger: composition
-    UserService *-- UserRepositoryInterface: composition
+    UserService --> RepositoryAwareTrait: use
 
 EOT;
 
