@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship;
 
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Trait_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode;
 
 class Relationships
 {
@@ -48,7 +46,7 @@ class Relationships
     public function filter(RenderOptions $options): self
     {
         $filtered = array_filter($this->relationships, function (Relationship $relationship) use ($options) {
-            if (!$options->traitRenderMode->isWithTraits() && ($relationship->from instanceof Trait_ || $relationship->to instanceof Trait_)) {
+            if ($relationship instanceof TraitUsage && !$options->traitRenderMode->isWithTraits()) {
                 return false;
             }
             if ($relationship instanceof Dependency && !$options->includeDependencies) {
