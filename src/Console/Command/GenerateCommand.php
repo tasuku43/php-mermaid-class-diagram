@@ -14,6 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode;
 
 class GenerateCommand extends Command
 {
@@ -31,6 +32,12 @@ class GenerateCommand extends Command
             null,
             InputOption::VALUE_REQUIRED,
             'Comma-separated relationship types to exclude: dependency,composition,inheritance,realization'
+        );
+        $this->addOption(
+            'trait-mode',
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Trait rendering mode: with-traits | flatten (default: flatten)'
         );
     }
 
@@ -55,6 +62,24 @@ class GenerateCommand extends Command
     private function buildRenderOptions(InputInterface $input): RenderOptions
     {
         $options = RenderOptions::default();
+
+        // Trait render mode
+        $traitMode = (string)($input->getOption('trait-mode') ?? '');
+        switch (strtolower($traitMode)) {
+            case 'with-traits':
+            case 'with_traits':
+            case 'with':
+                $options->traitRenderMode = TraitRenderMode::WithTraits;
+                break;
+            case 'flatten':
+            case 'flat':
+            case '':
+                // default (Flatten)
+                break;
+            default:
+                // ignore unknown; keep default
+                break;
+        }
 
         $exclude = (string)($input->getOption('exclude-relationships') ?? '');
         if ($exclude === '') {
