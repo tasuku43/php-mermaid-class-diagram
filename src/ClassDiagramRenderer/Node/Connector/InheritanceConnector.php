@@ -31,7 +31,7 @@ class InheritanceConnector extends Connector
     }
 
     public static function parse(
-        Node\Stmt\Interface_|Node\Stmt\Class_|Node\Stmt\Enum_ $classLike,
+        Node\Stmt\Interface_|Node\Stmt\Class_|Node\Stmt\Enum_|Node\Stmt\Trait_ $classLike,
         ClassDiagramNode                      $classDiagramNode,
     ): self
     {

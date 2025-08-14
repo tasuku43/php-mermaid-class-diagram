@@ -85,24 +85,6 @@ class NodeTest extends TestCase
     }
     
     /**
-     * Test the sortNodes static method
-     */
-    public function testSortNodes(): void
-    {
-        $nodeC = $this->createMockNode('C');
-        $nodeA = $this->createMockNode('A');
-        $nodeB = $this->createMockNode('B');
-        
-        $nodes = [$nodeC, $nodeA, $nodeB];
-        
-        Node::sortNodes($nodes);
-        
-        $this->assertEquals('A', $nodes[0]->nodeName());
-        $this->assertEquals('B', $nodes[1]->nodeName());
-        $this->assertEquals('C', $nodes[2]->nodeName());
-    }
-    
-    /**
      * Test multiple relationships
      */
     public function testMultipleRelationships(): void

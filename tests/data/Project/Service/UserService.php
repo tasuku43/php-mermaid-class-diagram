@@ -9,6 +9,7 @@ use TestProject\Repository\UserRepositoryInterface;
 
 class UserService
 {
+    use RepositoryAwareTrait;
     public function __construct(
         private UserRepositoryInterface $userRepository
     ) {

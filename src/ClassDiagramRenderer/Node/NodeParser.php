@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node;
 
 use Exception;
-use PhpParser\Node;
 use PhpParser\Node\Stmt;
-use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
@@ -17,6 +15,7 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\Composition
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\DependencyConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\InheritanceConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\RealizationConnector;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Connector\TraitUsageConnector;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Exception\CannnotParseToClassLikeException;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node as ClassDiagramNode;
 
@@ -37,6 +36,7 @@ class NodeParser
             fn(Stmt\Interface_|Stmt\Class_|Stmt\Enum_|Stmt\Trait_ $classLike, ClassDiagramNode $classDiagramNode) => RealizationConnector::parse($classLike, $classDiagramNode),
             fn(Stmt\Interface_|Stmt\Class_|Stmt\Enum_|Stmt\Trait_ $classLike, ClassDiagramNode $classDiagramNode) => CompositionConnector::parse($nodeFinder, $classLike, $classDiagramNode),
             fn(Stmt\Interface_|Stmt\Class_|Stmt\Enum_|Stmt\Trait_ $classLike, ClassDiagramNode $classDiagramNode) => DependencyConnector::parse($nodeFinder, $classLike, $classDiagramNode),
+            fn(Stmt\Interface_|Stmt\Class_|Stmt\Enum_|Stmt\Trait_ $classLike, ClassDiagramNode $classDiagramNode) => TraitUsageConnector::parse($nodeFinder, $classLike, $classDiagramNode),
         ];
     }
 
@@ -111,7 +111,8 @@ class NodeParser
         $validClassLikes = array_filter($allClassLikes, function ($node) {
             return $node instanceof Stmt\Class_ 
                 || $node instanceof Stmt\Interface_
-                || $node instanceof Stmt\Enum_;
+                || $node instanceof Stmt\Enum_
+                || $node instanceof Stmt\Trait_;
         });
         
         if (empty($validClassLikes)) {
@@ -132,6 +133,7 @@ class NodeParser
                 : new Class_((string)$classLike->name->name),
             $classLike instanceof Stmt\Interface_ => new Interface_((string)$classLike->name->name),
             $classLike instanceof Stmt\Enum_ => new Enum_((string)$classLike->name->name),
+            $classLike instanceof Stmt\Trait_ => new Trait_((string)$classLike->name->name),
             default => throw new Exception('Unexpected match value: ' . get_class($classLike))
         };
     }

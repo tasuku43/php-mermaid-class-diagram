@@ -5,11 +5,11 @@ namespace Tasuku43\Tests\MermaidClassDiagram\ClassDiagramRenderer;
 
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagram;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Class_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Interface_;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Inheritance;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship\Realization;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
 class ClassDiagramTest extends TestCase
 {

@@ -9,8 +9,8 @@ use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
 class ClassDiagramBuilderTest extends TestCase
 {
@@ -26,7 +26,7 @@ class ClassDiagramBuilderTest extends TestCase
         $this->nodeParser = new NodeParser($this->parser, $this->nodeFinder);
         $this->classDigagramBuilder = new ClassDiagramBuilder($this->nodeParser);
     }
-    
+
     public function testBuildFromSampleProject(): void
     {
         $path = __DIR__ . '/../data/Project';
@@ -39,6 +39,10 @@ class ClassDiagramBuilderTest extends TestCase
 classDiagram
     class AbstractController {
         <<abstract>>
+    }
+    class AuditLogger {
+    }
+    class AuditTarget {
     }
     class User {
     }
@@ -61,6 +65,8 @@ classDiagram
     UserRepository ..> User: dependency
     UserRepositoryInterface <|.. UserRepository: realization
     UserRepositoryInterface ..> User: dependency
+    UserService *-- AuditLogger: composition
+    UserService ..> AuditTarget: dependency
     UserService ..> InvalidArgumentException: dependency
     UserService ..> User: dependency
     UserService *-- UserRepositoryInterface: composition
@@ -91,18 +97,22 @@ EOT;
         $this->assertSame($expectedDiagram, $classDiagram);
     }
 
-    public function testBuildFromSampleProjectOnlyPropertiesDeps(): void
+    public function testBuildFromSampleProjectOnlyPropertiesDepsFlatten(): void
     {
         $path = __DIR__ . '/../data/Project';
 
         $classDiagram = $this->classDigagramBuilder
             ->build($path)
-            ->render(new RenderOptions(false, true, true, true));
+            ->render(new RenderOptions(false, true, true, true, \Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode::Flatten));
 
         $expectedDiagram = <<<'EOT'
 classDiagram
     class AbstractController {
         <<abstract>>
+    }
+    class AuditLogger {
+    }
+    class AuditTarget {
     }
     class User {
     }
@@ -123,7 +133,120 @@ classDiagram
     AbstractController <|-- UserController: inheritance
     UserController *-- UserService: composition
     UserRepositoryInterface <|.. UserRepository: realization
+    UserService *-- AuditLogger: composition
     UserService *-- UserRepositoryInterface: composition
+
+EOT;
+
+        $this->assertSame($expectedDiagram, $classDiagram);
+    }
+
+    public function testBuildFromSampleProjectOnlyPropertiesDepsWithTraits(): void
+    {
+        $path = __DIR__ . '/../data/Project';
+
+        $classDiagram = $this->classDigagramBuilder
+            ->build($path)
+            ->render(new RenderOptions(false, true, true, true, \Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode::WithTraits));
+
+        $expectedDiagram = <<<'EOT'
+classDiagram
+    class AbstractController {
+        <<abstract>>
+    }
+    class AuditLogger {
+    }
+    class AuditTarget {
+    }
+    class LoggerTrait {
+        <<trait>>
+    }
+    class RepositoryAwareTrait {
+        <<trait>>
+    }
+    class User {
+    }
+    class UserController {
+    }
+    class UserRepository {
+    }
+    class UserRepositoryInterface {
+        <<interface>>
+    }
+    class UserService {
+    }
+    class UserStatus {
+        <<enum>>
+    }
+
+    LoggerTrait *-- AuditLogger: composition
+    RepositoryAwareTrait --> LoggerTrait: use
+    RepositoryAwareTrait *-- UserRepositoryInterface: composition
+    User *-- UserStatus: composition
+    AbstractController <|-- UserController: inheritance
+    UserController *-- UserService: composition
+    UserRepositoryInterface <|.. UserRepository: realization
+    UserService --> RepositoryAwareTrait: use
+
+EOT;
+
+        $this->assertSame($expectedDiagram, $classDiagram);
+    }
+
+    public function testTraitUsesTrait_WithTraits(): void
+    {
+        $path = __DIR__ . '/../data/TraitChain';
+
+        $classDiagram = $this->classDigagramBuilder
+            ->build($path)
+            ->render(new RenderOptions(true, true, true, true, \Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode::WithTraits));
+
+        $expectedDiagram = <<<'EOT'
+classDiagram
+    class ChainUser {
+    }
+    class DepClass {
+    }
+    class DepInterface {
+        <<interface>>
+    }
+    class TraitA {
+        <<trait>>
+    }
+    class TraitB {
+        <<trait>>
+    }
+
+    ChainUser --> TraitA: use
+    TraitA --> TraitB: use
+    TraitB *-- DepClass: composition
+    TraitB ..> DepInterface: dependency
+
+EOT;
+
+        $this->assertSame($expectedDiagram, $classDiagram);
+    }
+
+    public function testTraitUsesTrait_Flatten(): void
+    {
+        $path = __DIR__ . '/../data/TraitChain';
+
+        $classDiagram = $this->classDigagramBuilder
+            ->build($path)
+            ->render(new RenderOptions(true, true, true, true, \Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode::Flatten));
+
+        $expectedDiagram = <<<'EOT'
+classDiagram
+    class ChainUser {
+    }
+    class DepClass {
+    }
+    class DepInterface {
+        <<interface>>
+    }
+
+    ChainUser *-- DepClass: composition
+    ChainUser ..> DepInterface: dependency
 
 EOT;
 

@@ -10,93 +10,59 @@ composer require --dev tasuku43/mermaid-class-diagram
 ```
 
 ## Usage
-Here is an example run on a sample project
+
+### Command
+- `vendor/bin/mermaid-class-diagram generate --path <path> [options]`
+
+### Options
+- `--path <string>`: Required. Directory (recursively scanned) or single PHP file.
+- `--exclude-relationships <csv>`: Hide edge types; case-insensitive; aliases supported.
+  - `dependency|dependencies|dep|deps`
+  - `composition|compositions|comp`
+  - `inheritance|inheritances|extends`
+  - `realization|realizations|implements`
+- `--trait-mode <mode>`: Trait rendering mode. Default: `flatten`.
+  - `with-traits` (aliases: `with_traits`, `with`): show trait nodes and `use` edges; suppress class-level comp/dep duplicates provided by traits.
+  - `flatten` (aliases: `flat`): hide trait nodes and `use` edges; reassign trait-origin comp/dep to using classes; supports trait→trait→class chains; deduplicates.
+
+### Examples
+#### Execute command by specifying a directory (sample project)
 ```shell
-$ tree
-.
-├── composer.json
-├── composer.lock
-├── src
-│   ├── SomeAbstractClass.php
-│   ├── SomeClassA.php
-│   ├── SomeClassB.php
-│   ├── SomeClassC.php
-│   ├── SomeClassD.php
-│   ├── SomeClassE.php
-│   └── SomeInterface.php
-└── vendor
-```
-```php
-class SomeClassA extends SomeAbstractClass
-{
-    private SomeClassB $someClassB;
-
-    public function __construct(private SomeClassC $someClassC, SomeClassD $someClassD, private int $int)
-    {
-    }
-}
-
-class SomeClassB
-{
-}
-
-class SomeClassC
-{
-}
-
-class SomeClassD
-{
-}
-
-class SomeClassE
-{
-    public function __construct(private SomeClassA $a)
-    {
-        $b = new SomeClassB;
-    }
-
-    public function dependAandC(SomeClassA $a): SomeClassC
-    {
-    }
-}
-
-abstract class SomeAbstractClass implements SomeInterface
-{
-}
-
-interface SomeInterface
-{
-}
-```
-### Execute command by specifying a directory
-```shell
-$ vendor/bin/mermaid-class-diagram generate --path src
+$ vendor/bin/mermaid-class-diagram generate --path tests/data/Project
 classDiagram
-    class SomeAbstractClass {
+    class AbstractController {
         <<abstract>>
     }
-    class SomeClassA {
+    class AuditLogger {
     }
-    class SomeClassB {
+    class AuditTarget {
     }
-    class SomeClassC {
+    class User {
     }
-    class SomeClassD {
+    class UserController {
     }
-    class SomeClassE {
+    class UserRepository {
     }
-    class SomeInterface {
+    class UserRepositoryInterface {
         <<interface>>
     }
+    class UserService {
+    }
+    class UserStatus {
+        <<enum>>
+    }
 
-    SomeInterface <|.. SomeAbstractClass: realization
-    SomeAbstractClass <|-- SomeClassA: inheritance
-    SomeClassA *-- SomeClassB: composition
-    SomeClassA *-- SomeClassC: composition
-    SomeClassA ..> SomeClassD: dependency
-    SomeClassE *-- SomeClassA: composition
-    SomeClassE ..> SomeClassB: dependency
-    SomeClassE ..> SomeClassC: dependency
+    User *-- UserStatus: composition
+    AbstractController <|-- UserController: inheritance
+    UserController *-- UserService: composition
+    UserRepository ..> User: dependency
+    UserRepositoryInterface <|.. UserRepository: realization
+    UserRepositoryInterface ..> User: dependency
+    UserService *-- AuditLogger: composition
+    UserService ..> AuditTarget: dependency
+    UserService ..> InvalidArgumentException: dependency
+    UserService ..> User: dependency
+    UserService *-- UserRepositoryInterface: composition
 ```
 ```mermaid
 classDiagram
@@ -126,17 +92,15 @@ classDiagram
     SomeClassE ..> SomeClassB: dependency
     SomeClassE ..> SomeClassC: dependency
 ```
-### Execute command by specifying a file
+#### Execute command by specifying a file (sample file)
 ```shell
-$ vendor/bin/mermaid-class-diagram generate --path src/SomeClassA.php
+$ vendor/bin/mermaid-class-diagram generate --path tests/data/Project/Controller/UserController.php
 classDiagram
-    class SomeClassA {
+    class UserController {
     }
 
-    SomeAbstractClass <|-- SomeClassA: inheritance
-    SomeClassA *-- SomeClassB: composition
-    SomeClassA *-- SomeClassC: composition
-    SomeClassD <.. SomeClassA: dependency
+    AbstractController <|-- UserController: inheritance
+    UserController *-- UserService: composition
 ```
 ```mermaid
 classDiagram
@@ -149,7 +113,7 @@ classDiagram
     SomeClassD <.. SomeClassA: dependency
 ```
 
-### Filter relationships
+#### Filter relationships
 You can hide specific relationship types via CSV with `--exclude-relationships`.
 
 - Allowed values (case-insensitive, aliases supported):
@@ -165,6 +129,63 @@ $ vendor/bin/mermaid-class-diagram generate --path src --exclude-relationships d
 
 # Hide only dependencies
 $ vendor/bin/mermaid-class-diagram generate --path src --exclude-relationships dependency
+```
+
+#### Traits
+There are two render modes for traits (the CLI uses Flatten by default):
+
+- Flatten (default)
+  - Hides trait nodes and `use` edges.
+  - Reassigns trait-origin composition/dependency edges to the using classes.
+  - Supports transitive trait chains (TraitA uses TraitB); edges are reassigned to the final class users.
+- WithTraits
+  - Shows trait nodes and `use` edges.
+  - Keeps trait-origin composition/dependency edges on the trait.
+  - Suppresses duplicate class-level composition/dependency when already provided by a used trait.
+
+Example
+```php
+trait HasUserDeps {
+    private UserRepository $repo;
+    public function findById(UserId $id): ?User {}
+}
+
+class UserController {
+    use HasUserDeps;
+}
+```
+Output examples (order simplified):
+
+Flatten (default)
+```mermaid
+classDiagram
+    class UserController {
+    }
+    class UserRepository {
+    }
+    class UserId {
+    }
+
+    UserController *-- UserRepository: composition
+    UserController ..> UserId: dependency
+```
+
+WithTraits
+```mermaid
+classDiagram
+    class UserController {
+    }
+    class HasUserDeps {
+        <<trait>>
+    }
+    class UserRepository {
+    }
+    class UserId {
+    }
+
+    UserController --> HasUserDeps: use
+    HasUserDeps *-- UserRepository: composition
+    HasUserDeps ..> UserId: dependency
 ```
 
 ## License
