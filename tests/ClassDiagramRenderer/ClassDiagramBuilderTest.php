@@ -9,7 +9,6 @@ use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
-use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramDumper;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
@@ -159,6 +158,9 @@ classDiagram
     }
     class AuditTarget {
     }
+    class LoggerTrait {
+        <<trait>>
+    }
     class RepositoryAwareTrait {
         <<trait>>
     }
@@ -177,7 +179,8 @@ classDiagram
         <<enum>>
     }
 
-    RepositoryAwareTrait *-- AuditLogger: composition
+    LoggerTrait *-- AuditLogger: composition
+    RepositoryAwareTrait --> LoggerTrait: use
     RepositoryAwareTrait *-- UserRepositoryInterface: composition
     User *-- UserStatus: composition
     AbstractController <|-- UserController: inheritance
