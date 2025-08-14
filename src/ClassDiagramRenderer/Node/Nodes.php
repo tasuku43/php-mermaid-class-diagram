@@ -41,7 +41,12 @@ class Nodes
         return $this;
     }
 
-    public function filter(RenderOptions $options): self
+    public function optimize(RenderOptions $options): self
+    {
+        return $this->filterByOption($options);
+    }
+
+    private function filterByOption(RenderOptions $options): self
     {
         $filtered = new self();
         foreach ($this->nodes as $node) {

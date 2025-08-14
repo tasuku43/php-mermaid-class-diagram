@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Relationship;
 
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Trait_;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
 
 class Relationships
 {
@@ -43,9 +45,163 @@ class Relationships
         return $this;
     }
 
-    public function filter(RenderOptions $options): self
+    public function optimize(RenderOptions $options): self
     {
-        $filtered = array_filter($this->relationships, function (Relationship $relationship) use ($options) {
+        // Delegate to clearer, private implementations per mode
+        $relationships = $options->traitRenderMode->isWithTraits()
+            ? $this->optimizeWithTraitsInternal()
+            : $this->optimizeFlattenInternal();
+
+        return new self($this->filterByOptions($relationships, $options));
+    }
+
+    /**
+     * Flatten mode: reassign trait-origin relationships to using classes,
+     * hide TraitUsage edges, and deduplicate by (type, from, to).
+     * @return Relationship[]
+     */
+    private function optimizeFlattenInternal(): array
+    {
+        $traitUsers = $this->buildTraitUsersMap();
+        $flattened = [];
+        $seen = [];
+
+        foreach ($this->relationships as $rel) {
+            if ($rel instanceof TraitUsage) {
+                continue; // hide trait usage edges in flatten mode
+            }
+
+            if ($rel->from instanceof Trait_) {
+                $users = $traitUsers[$rel->from->nodeName()] ?? [];
+                if (!empty($users)) {
+                    foreach ($users as $userNode) {
+                        $className = get_class($rel);
+                        /** @var Relationship $new */
+                        $new = new $className($userNode, $rel->to);
+                        $k = $this->generateKey($new);
+                        if (!isset($seen[$k])) {
+                            $seen[$k] = true;
+                            $flattened[] = $new;
+                        }
+                    }
+                }
+                // drop original trait-origin edge
+                continue;
+            }
+
+            $k = $this->generateKey($rel);
+            if (!isset($seen[$k])) {
+                $seen[$k] = true;
+                $flattened[] = $rel;
+            }
+        }
+
+        return $flattened;
+    }
+
+    /**
+     * WithTraits mode: keep trait and `use` edges, and suppress class-level
+     * duplicates for composition/dependency that are already provided by traits.
+     * @return Relationship[]
+     */
+    private function optimizeWithTraitsInternal(): array
+    {
+        $traitProvides = $this->buildTraitProvidesMap();
+        $classUses = $this->buildClassUsesMap();
+
+        $result = [];
+        $seen = [];
+        foreach ($this->relationships as $rel) {
+            $from = $rel->from;
+
+            $isSuppressedType = $rel instanceof Dependency || $rel instanceof Composition;
+            if ($isSuppressedType && !($from instanceof Trait_)) {
+                $traits = $classUses[$from->nodeName()] ?? [];
+                $suppress = false;
+                foreach ($traits as $tName) {
+                    if (!empty($traitProvides[get_class($rel)][$rel->to->nodeName()] ?? false)) {
+                        $suppress = true;
+                        break;
+                    }
+                }
+                if ($suppress) {
+                    continue;
+                }
+            }
+
+            $k = $this->generateKey($rel);
+            if (!isset($seen[$k])) {
+                $seen[$k] = true;
+                $result[] = $rel;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Build a map: traitName => [ className => Node ].
+     * @return array<string, array<string, Node>>
+     */
+    private function buildTraitUsersMap(): array
+    {
+        $traitUsers = [];
+        foreach ($this->relationships as $rel) {
+            if ($rel instanceof TraitUsage) {
+                $traitName = $rel->to->nodeName();
+                $traitUsers[$traitName] ??= [];
+                $traitUsers[$traitName][$rel->from->nodeName()] = $rel->from;
+            }
+        }
+        return $traitUsers;
+    }
+
+    /**
+     * Build a map of trait-provided targets by relationship type:
+     * type(FQCN) => [ toNodeName => true ].
+     * @return array<string, array<string, bool>>
+     */
+    private function buildTraitProvidesMap(): array
+    {
+        $traitProvides = [];
+        foreach ($this->relationships as $rel) {
+            if ($rel->from instanceof Trait_) {
+                $type = get_class($rel);
+                $traitProvides[$type] ??= [];
+                $traitProvides[$type][$rel->to->nodeName()] = true;
+            }
+        }
+        return $traitProvides;
+    }
+
+    /**
+     * Build a map: className => [ traitName, ... ].
+     * @return array<string, string[]>
+     */
+    private function buildClassUsesMap(): array
+    {
+        $classUses = [];
+        foreach ($this->relationships as $rel) {
+            if ($rel instanceof TraitUsage) {
+                $classUses[$rel->from->nodeName()] ??= [];
+                $classUses[$rel->from->nodeName()][] = $rel->to->nodeName();
+            }
+        }
+        return $classUses;
+    }
+
+    private function generateKey(Relationship $r): string
+    {
+        return get_class($r) . '|' . $r->from->nodeName() . '|' . $r->to->nodeName();
+    }
+
+    /**
+     * @param Relationship[] $relationships
+     * @return Relationship[]
+     */
+    private function filterByOptions(array $relationships, RenderOptions $options): array
+    {
+        $filtered = array_filter($relationships, function (Relationship $relationship) use ($options) {
             if ($relationship instanceof TraitUsage && !$options->traitRenderMode->isWithTraits()) {
                 return false;
             }
@@ -65,6 +221,6 @@ class Relationships
             return true;
         });
 
-        return new self(array_values($filtered));
+        return array_values($filtered);
     }
 }

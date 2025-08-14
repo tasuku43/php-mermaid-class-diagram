@@ -61,8 +61,8 @@ class ClassDiagramDumper
         $relationships = $relationshipsProp->getValue($this->diagram);
 
         // Apply the same filtering/sorting policy as render()
-        $nodes = $nodes->filter($options)->sort()->getAll();
-        $relationships = $relationships->filter($options)->sort()->getAll();
+        $nodes = $nodes->optimize($options)->sort()->getAll();
+        $relationships = $relationships->optimize($options)->sort()->getAll();
 
         return [$nodes, $relationships];
     }
@@ -91,4 +91,3 @@ class ClassDiagramDumper
         };
     }
 }
-

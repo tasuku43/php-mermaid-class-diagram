@@ -39,8 +39,11 @@ class ClassDiagram
 
     public function render(RenderOptions $options): string
     {
-        $nodes        = $this->nodes->filter($options)->sort()->getAll();
-        $relationships = $this->relationships->filter($options)->sort()->getAll();
+        $nodes         = $this->nodes->optimize($options)->sort()->getAll();
+        $relationships = $this->relationships
+            ->optimize($options)
+            ->sort()
+            ->getAll();
 
         $output = "classDiagram\n";
 
