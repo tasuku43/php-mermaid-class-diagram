@@ -9,6 +9,7 @@ use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 use PHPUnit\Framework\TestCase;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramBuilder;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\ClassDiagramDumper;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\RenderOptions\RenderOptions;
 
@@ -25,6 +26,16 @@ class ClassDiagramBuilderTest extends TestCase
         $this->nodeFinder = new NodeFinder();
         $this->nodeParser = new NodeParser($this->parser, $this->nodeFinder);
         $this->classDigagramBuilder = new ClassDiagramBuilder($this->nodeParser);
+    }
+
+    public function testDump(): void
+    {
+        $path = __DIR__ . '/../data/Project';
+
+        $classDiagram = $this->classDigagramBuilder
+            ->build($path);
+        $dumper = new ClassDiagramDumper($classDiagram);
+        echo $dumper->toYaml();
     }
     
     public function testBuildFromSampleProject(): void
