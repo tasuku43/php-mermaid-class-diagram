@@ -28,16 +28,6 @@ class ClassDiagramBuilderTest extends TestCase
         $this->classDigagramBuilder = new ClassDiagramBuilder($this->nodeParser);
     }
 
-    public function testDump(): void
-    {
-        $path = __DIR__ . '/../data/Project';
-
-        $classDiagram = $this->classDigagramBuilder
-            ->build($path);
-        $dumper = new ClassDiagramDumper($classDiagram);
-        echo $dumper->toYaml();
-    }
-    
     public function testBuildFromSampleProject(): void
     {
         $path = __DIR__ . '/../data/Project';
@@ -194,6 +184,66 @@ classDiagram
     UserController *-- UserService: composition
     UserRepositoryInterface <|.. UserRepository: realization
     UserService --> RepositoryAwareTrait: use
+
+EOT;
+
+        $this->assertSame($expectedDiagram, $classDiagram);
+    }
+
+    public function testTraitUsesTrait_WithTraits(): void
+    {
+        $path = __DIR__ . '/../data/TraitChain';
+
+        $classDiagram = $this->classDigagramBuilder
+            ->build($path)
+            ->render(new RenderOptions(true, true, true, true, \Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode::WithTraits));
+
+        $expectedDiagram = <<<'EOT'
+classDiagram
+    class ChainUser {
+    }
+    class DepClass {
+    }
+    class DepInterface {
+        <<interface>>
+    }
+    class TraitA {
+        <<trait>>
+    }
+    class TraitB {
+        <<trait>>
+    }
+
+    ChainUser --> TraitA: use
+    TraitA --> TraitB: use
+    TraitB *-- DepClass: composition
+    TraitB ..> DepInterface: dependency
+
+EOT;
+
+        $this->assertSame($expectedDiagram, $classDiagram);
+    }
+
+    public function testTraitUsesTrait_Flatten(): void
+    {
+        $path = __DIR__ . '/../data/TraitChain';
+
+        $classDiagram = $this->classDigagramBuilder
+            ->build($path)
+            ->render(new RenderOptions(true, true, true, true, \Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\TraitRenderMode::Flatten));
+
+        $expectedDiagram = <<<'EOT'
+classDiagram
+    class ChainUser {
+    }
+    class DepClass {
+    }
+    class DepInterface {
+        <<interface>>
+    }
+
+    ChainUser *-- DepClass: composition
+    ChainUser ..> DepInterface: dependency
 
 EOT;
 

@@ -62,7 +62,7 @@ class Relationships
      */
     private function optimizeFlattenInternal(): array
     {
-        $traitUsers = $this->buildTraitUsersMap();
+        $traitUsers = $this->buildTraitClassUsersMap();
         $flattened = [];
         $seen = [];
 
@@ -154,6 +154,45 @@ class Relationships
             }
         }
         return $traitUsers;
+    }
+
+    /**
+     * Build a map from trait name to transitive class users (flattening trait->trait chains).
+     * Only final class-like nodes (non-trait) are included as users.
+     * @return array<string, array<string, Node>> traitName => [className => Node]
+     */
+    private function buildTraitClassUsersMap(): array
+    {
+        $directUsers = $this->buildTraitUsersMap();
+        $result = [];
+
+        foreach ($directUsers as $traitName => $usersMap) {
+            $finals = [];
+            $queue = array_values($usersMap);
+            $visitedTraits = [$traitName => true];
+
+            while (!empty($queue)) {
+                /** @var Node $user */
+                $user = array_shift($queue);
+                if ($user instanceof Trait_) {
+                    $tName = $user->nodeName();
+                    if (!empty($visitedTraits[$tName])) {
+                        continue;
+                    }
+                    $visitedTraits[$tName] = true;
+                    foreach ($directUsers[$tName] ?? [] as $next) {
+                        $queue[] = $next;
+                    }
+                    continue;
+                }
+
+                $finals[$user->nodeName()] = $user;
+            }
+
+            $result[$traitName] = $finals;
+        }
+
+        return $result;
     }
 
     /**
