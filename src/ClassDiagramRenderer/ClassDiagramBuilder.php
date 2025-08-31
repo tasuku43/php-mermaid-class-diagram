@@ -5,6 +5,7 @@ namespace Tasuku43\MermaidClassDiagram\ClassDiagramRenderer;
 
 use Exception;
 use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\NodeParser;
+use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Trait_ as DiagramTrait;
 
 class ClassDiagramBuilder
 {
@@ -21,7 +22,7 @@ class ClassDiagramBuilder
     {
         $classDigagram = new ClassDiagram();
 
-        foreach ($this->nodeParser->parse($path)->getAllNodes() as $node) {
+        foreach ($this->nodeParser->parse($path)->getAll() as $node) {
             $classDigagram->addNode($node)->addRelationships(...$node->relationships());
         }
 

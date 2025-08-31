@@ -8,7 +8,7 @@ use Tasuku43\MermaidClassDiagram\ClassDiagramRenderer\Node\Node;
 abstract class Relationship
 {
     protected const FORMAT = "%s %s %s: %s";
-    public function __construct(protected Node $from, protected Node $to)
+    public function __construct(public Node $from, public Node $to)
     {
     }
 

@@ -16,4 +16,17 @@ abstract class Connector
     }
 
     abstract public function connect(Nodes $nodes): void;
+
+    public function nodeName(): string
+    {
+        return $this->nodeName;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function toConnectNodeNames(): array
+    {
+        return $this->toConnectNodeNames;
+    }
 }
